@@ -12,6 +12,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'principal.views.inicio'),
     #url(r'^privado','principal.views.privado'),
-    #url(r'^ingresar', 'principal.views.ingresar'),
-    #url(r'^registro', 'principal.views.registro'),
+    url(r'^ingresar', 'principal.views.ingresar'),
+    url(r'^registro', 'principal.views.registro'),
 )

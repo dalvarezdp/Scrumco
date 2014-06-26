@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+	<p>El usuario y contrasena no coinciden o no existen.</p>
+{% endblock %}

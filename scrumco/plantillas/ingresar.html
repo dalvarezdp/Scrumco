@@ -21,36 +21,29 @@
     <body class="bg-black">
 
         <div class="form-box" id="login-box">
-            <div class="header">Sign In</div>
-            <form action="../../index.html" method="post">
+            <div class="header">Acceder</div>
+            <form action="" method="post" action="">
+            	{% csrf_token %}
                 <div class="body bg-gray">
                     <div class="form-group">
-                        <input type="text" name="userid" class="form-control" placeholder="User ID"/>
+                        <input type="text" name="username" id="username" class="form-control" placeholder="Usuario"/>
                     </div>
                     <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Password"/>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña"/>
                     </div>          
                     <div class="form-group">
-                        <input type="checkbox" name="remember_me"/> Remember me
+                        <input type="checkbox" name="remember_me"/> Recuérdame la próxima vez
                     </div>
                 </div>
                 <div class="footer">                                                               
-                    <button type="submit" class="btn bg-olive btn-block">Sign me in</button>  
+                    <button type="submit" class="btn bg-olive btn-block">Iniciar sesión</button>  
                     
-                    <p><a href="#">I forgot my password</a></p>
+                    <p><a href="#">He olvidado mi contraseña</a></p>
                     
-                    <a href="register.html" class="text-center">Register a new membership</a>
+                    <a href="register.html" class="text-center">Registrarse como nuevo usuario</a>
                 </div>
             </form>
 
-            <div class="margin text-center">
-                <span>Sign in using social networks</span>
-                <br/>
-                <button class="btn bg-light-blue btn-circle"><i class="fa fa-facebook"></i></button>
-                <button class="btn bg-aqua btn-circle"><i class="fa fa-twitter"></i></button>
-                <button class="btn bg-red btn-circle"><i class="fa fa-google-plus"></i></button>
-
-            </div>
         </div>
 
 
