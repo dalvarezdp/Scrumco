@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(RUTA_PROYECTO, ...)
 import os
-RUTA_PROYECTO = os.path.dirname(os.path.dirname(__file__))
+RUTA_PROYECTO = os.path.realpath(os.path.dirname(__file__))
 
 ADMINS = (
     ('David Alvarez', 'i92alpid.uco.es'),
