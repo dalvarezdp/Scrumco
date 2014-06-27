@@ -16,10 +16,15 @@ from django.core.exceptions import ObjectDoesNotExist
 def inicio(request):
     usuario=request.user
     if usuario.is_authenticated():
-        return render_to_response('privado.html', context_instance=RequestContext(request))
+        personal=Personal.objects.get(usuario=usuario.id)
+          
+    if usuario.is_authenticated():
+        return render_to_response('privado.html',{'personal':personal}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
+    
+
 def ingresar(request):
     if not request.user.is_anonymous():
         return HttpResponseRedirect('/')
@@ -46,20 +51,46 @@ def registro(request):
     if request.method == 'POST':
         formulario = UserCreationForm(request.POST)
         if formulario.is_valid:
-            u = formulario.save(commit=False)
-            u.save()
-            p = Personal.objects.create(
-                foto = "default",
-                usuario = u,
-            )
-            p.save()
+            empresa = request.POST['empresa']
             usuario = request.POST['username']
             clave = request.POST['password1']
-            acceso = authenticate(username=usuario, password=clave)
-            if acceso is not None:
-                if acceso.is_active:
-                    login(request, acceso)
-                    return HttpResponseRedirect('/')
+            clave2 = request.POST['password2']
+            if not usuario or not clave or not clave2 or not empresa:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = User.objects.get(username=usuario)
+                    return HttpResponseRedirect('/usuarioexiste')
+                except:
+                    try:                        
+                        u = formulario.save(commit=False)
+                        u.is_superuser = 1
+                        u.save()
+                    except:
+                        return HttpResponseRedirect('/passdiferentes')
+                try:
+                    p = Personal.objects.create(
+                        foto = "default",
+                        usuario = u,
+                        empresa = request.POST['empresa']
+                    )
+                    p.save()
+                except:
+                    e = User.objects.get(username=usuario)
+                    e.delete()
+                    return HttpResponseRedirect('/empresaexiste')                  
+                acceso = authenticate(username=usuario, password=clave)
+                if acceso is not None:
+                    if acceso.is_active:
+                        login(request, acceso)
+                        return HttpResponseRedirect('/')
+        else:
+            return HttpResponseRedirect('/ingresar')
     else:
         formulario = UserCreationForm()
     return render_to_response('registro.html',{'formulario':formulario}, context_instance=RequestContext(request))
+
+@login_required(login_url='/ingresar')
+def cerrar(request):
+    logout(request)
+    return HttpResponseRedirect('/')

@@ -10,7 +10,7 @@ class Personal(models.Model):
     scrummaster = models.BooleanField(default=True)
     teammember = models.BooleanField(default=False)
     productowner = models.BooleanField(default=False)
-    empresa = models.CharField(max_length=100, blank="false", null="false")
+    empresa = models.CharField(max_length=100, blank="False", null="False", unique="True")
     usuario = models.ForeignKey(User)
     def __unicode__(self):
         return str(self.usuario)

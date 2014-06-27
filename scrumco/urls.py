@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     #url(r'^privado','principal.views.privado'),
     url(r'^ingresar', 'principal.views.ingresar'),
     url(r'^registro', 'principal.views.registro'),
+    url(r'^cerrar','principal.views.cerrar'),
 )
