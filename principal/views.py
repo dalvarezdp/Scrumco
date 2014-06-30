@@ -1,4 +1,4 @@
-from principal.models import Personal
+from principal.models import Personal, Miembro
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,7 +16,10 @@ from django.core.exceptions import ObjectDoesNotExist
 def inicio(request):
     usuario=request.user
     if usuario.is_authenticated():
-        personal=Personal.objects.get(usuario=usuario.id)
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
           
     if usuario.is_authenticated():
         return render_to_response('privado.html',{'personal':personal}, context_instance=RequestContext(request))
@@ -94,3 +97,64 @@ def registro(request):
 def cerrar(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+def lista_miembros(request):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            miembros = Miembro.objects.filter(jefe=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            miembros = Miembro.objects.filter(jefe=personal.jefe)
+          
+    if usuario.is_authenticated():
+        return render_to_response('miembros.html',{'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+def nuevo_miembro(request):
+    usuario=request.user
+    if usuario.is_authenticated():
+        personal=Personal.objects.get(usuario=usuario.id)
+    if request.method == 'POST':
+        formulario = UserCreationForm(request.POST)
+        if formulario.is_valid:
+            usuario = request.POST['username']
+            clave = request.POST['password1']
+            clave2 = request.POST['password2']
+            nombre = request.POST['first_name']
+            apellidos = request.POST['last_name']
+            email = request.POST['email']
+            if not usuario or not clave or not clave2:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = User.objects.get(username=usuario)
+                    return HttpResponseRedirect('/usuarioexiste')
+                except:
+                    try:                        
+                        u = formulario.save(commit=False)
+                        u.first_name = nombre
+                        u.last_name = apellidos
+                        u.email = email
+                        u.save()
+                    except:
+                        return HttpResponseRedirect('/passdiferentes')
+                
+                m = Miembro.objects.create(
+                    foto = "default",
+                    usuario = u,
+                    jefe = personal,
+                    empresa = personal.empresa
+                )
+                m.save()                  
+                return HttpResponseRedirect('/miembros')
+    else:
+        formulario = UserCreationForm()
+    return render_to_response('registromiembro.html',{'formulario':formulario}, context_instance=RequestContext(request))
+
+
+

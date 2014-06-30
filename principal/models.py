@@ -14,3 +14,19 @@ class Personal(models.Model):
     usuario = models.ForeignKey(User)
     def __unicode__(self):
         return str(self.usuario)
+
+    
+class Miembro(models.Model):
+    fecha = models.DateTimeField(db_index=True, auto_now_add=True)
+    telefono = models.IntegerField(blank="true", null="true")
+    foto = models.ImageField(upload_to='perfil',verbose_name='Imágen')
+    scrummaster = models.BooleanField(default=True)
+    teammember = models.BooleanField(default=False)
+    productowner = models.BooleanField(default=False)
+    empresa = models.CharField(max_length=100, blank="False", null="False")
+    usuario = models.ForeignKey(User)
+    jefe = models.ForeignKey(Personal)
+    def __unicode__(self):
+        return str(self.usuario)
+    
+    

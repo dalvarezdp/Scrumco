@@ -249,7 +249,7 @@
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
 {% block sidebarlateral %}
-						<li class="active">
+						<li>
                             <a href="/">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
@@ -259,7 +259,7 @@
                                 <i class="fa fa-th"></i> <span>Proyectos</span> <small class="badge pull-right bg-green">nuevo</small>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="/miembros">
                                 <i class="fa fa-users"></i><span>Miembros</span>
                             </a>
@@ -269,12 +269,95 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Dashboard
+                        Miembros
                     </h1>
+                    <ol class="breadcrumb">
+                        <li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Nuevo miembro</a></li>
+                    </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
 
+				<!-- Small boxes (Stat box) -->
+                    <div class="row">
+                    	{% if personal.usuario.is_superuser %}                        
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->                          
+                            <div class="small-box bg-yellow">
+                                <div class="inner">
+                                   
+                                    <h3>
+                                    	{% if not personal.usuario.first_name %}
+											{{personal.usuario.username|capfirst}}
+										{% else %}
+											{{personal.usuario.first_name|capfirst}}
+										{% endif %}
+                                        
+                                    </h3>
+                                    <p>
+										Administrador
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-person-add"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    Más información <i class="fa fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->          
+	                        <div class="small-box bg-yellow">
+	                            <div class="inner">
+	                                   
+	                               	<h3>
+	                                    {% if not personal.jefe.usuario.first_name %}
+											{{personal.jefe.usuario.username|capfirst}}
+										{% else %}
+											{{personal.jefe.usuario.first_name|capfirst}}
+										{% endif %}
+	                                        
+	                                </h3>
+	                                <p>
+										Administrador
+	                                </p>
+	                            </div>
+	                            <div class="icon">
+	                                <i class="ion ion-person-add"></i>
+	                            </div>
+	                            <a href="#" class="small-box-footer">
+	                                Más información <i class="fa fa-arrow-circle-right"></i>
+	                            </a>
+	                        </div>
+	                    </div>
+                        {% endif %} 
+                        {% for dato in miembros %}
+                        	<div class="col-lg-3 col-xs-6">
+                            	<!-- small box -->
+								<div class="small-box bg-yellow">
+		                             <div class="inner">
+		                                   
+		                                <h3>
+											{{dato.usuario.first_name|capfirst}}			
+		                                </h3>
+		                                <p>
+											{{dato.usuario.email|capfirst}}
+		                                </p>
+		                             </div>
+		                             <div class="icon">
+		                                 <i class="ion ion-person-add"></i>
+		                             </div>
+		                             <a href="#" class="small-box-footer">
+		                                 Más información <i class="fa fa-arrow-circle-right"></i>
+		                             </a>
+		                        </div>
+		                   </div><!-- ./col --> 
+						{% empty %}
+								
+						{% endfor %}                    
+                    </div><!-- /.row -->
 
 {% endblock %}                        

@@ -15,4 +15,6 @@ urlpatterns = patterns('',
     url(r'^ingresar', 'principal.views.ingresar'),
     url(r'^registro', 'principal.views.registro'),
     url(r'^cerrar','principal.views.cerrar'),
+    url(r'^miembros', 'principal.views.lista_miembros'),
+    url(r'^miembro/nuevo/$', 'principal.views.nuevo_miembro'),
 )
