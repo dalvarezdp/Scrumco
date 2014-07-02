@@ -29,4 +29,25 @@ class Miembro(models.Model):
     def __unicode__(self):
         return str(self.usuario)
     
+
+class Proyecto(models.Model):
+    nombreProyecto = models.CharField(max_length=100, unique=True)
+    fechaInicio = models.DateField(db_index=False, auto_now_add=False)
+    descripcion = models.TextField()
+    foco = models.IntegerField(blank="true", null="true")
+    historiasP = models.IntegerField(blank="true", null="true")
+    spProyecto = models.IntegerField(blank="true", null="true")
+    jefeProyecto = models.ForeignKey(Personal)
+    def __unicode__(self):
+        return str(self.jefeProyecto)
     
+
+class Equipo(models.Model):
+    scrummaster = models.BooleanField(default=False)
+    teammember = models.BooleanField(default=True)
+    productowner = models.BooleanField(default=False)
+    proyecto = models.ForeignKey(Proyecto)
+    miembro = models.ForeignKey(Miembro)
+    def __unicode__(self):
+        return str(self.miembro)    
+

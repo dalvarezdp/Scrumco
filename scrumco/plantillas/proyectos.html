@@ -254,12 +254,12 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Proyectos</span> <small class="badge pull-right bg-green">nuevo</small>
+                                <i class="fa fa-th"></i> <span>Proyectos</span>
                             </a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="/miembros">
                                 <i class="fa fa-users"></i><span>Miembros</span>
                             </a>
@@ -269,97 +269,43 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Miembros
+                        Proyectos
                     </h1>
                     <ol class="breadcrumb">
                     	{% if personal.usuario.is_superuser %}
-                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Nuevo miembro</a></li>
-                        {% endif %} 
+                        	<li><a href="/proyecto/nuevo/"><i class="fa fa-plus"></i> Nuevo proyecto</a></li>
+                        {% endif %}
                     </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
-
-				<!-- Small boxes (Stat box) -->
-                    <div class="row">
-                    	{% if personal.usuario.is_superuser %}                        
-                        <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->                          
-                            <div class="small-box bg-yellow">
-                                <div class="inner">
-                                   
-                                    <h3>
-                                    	{% if not personal.usuario.first_name %}
-											{{personal.usuario.username|capfirst}}
-										{% else %}
-											{{personal.usuario.first_name|capfirst}} {{personal.usuario.last_name|capfirst}}
-										{% endif %}
-                                        
-                                    </h3>
-                                    <p>
-										Administrador
-                                    </p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-person-add"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">
-                                    Más información <i class="fa fa-arrow-circle-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                        {% else %}
-                        <div class="col-lg-3 col-xs-6">
-                            <!-- small box -->          
-	                        <div class="small-box bg-yellow">
-	                            <div class="inner">
-	                                   
-	                               	<h3>
-	                                    {% if not personal.jefe.usuario.first_name %}
-											{{personal.jefe.usuario.username|capfirst}}
-										{% else %}
-											{{personal.jefe.usuario.first_name|capfirst}} {{personal.jefe.usuario.last_name|capfirst}}
-										{% endif %}
-	                                        
-	                                </h3>
-	                                <p>
-										Administrador
-	                                </p>
-	                            </div>
-	                            <div class="icon">
-	                                <i class="ion ion-person-add"></i>
-	                            </div>
-	                            <a href="#" class="small-box-footer">
-	                                Más información <i class="fa fa-arrow-circle-right"></i>
-	                            </a>
-	                        </div>
-	                    </div>
-                        {% endif %} 
-                        {% for dato in miembros %}
-                        	<div class="col-lg-3 col-xs-6">
-                            	<!-- small box -->
-								<div class="small-box bg-yellow">
-		                             <div class="inner">
-		                                   
-		                                <h3>
-											{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}			
-		                                </h3>
-		                                <p>
-											{{dato.usuario.email|capfirst}}
-		                                </p>
-		                             </div>
-		                             <div class="icon">
-		                                 <i class="ion ion-person-add"></i>
-		                             </div>
-		                             <a href="#" class="small-box-footer">
-		                                 Más información <i class="fa fa-arrow-circle-right"></i>
-		                             </a>
-		                        </div>
-		                   </div><!-- ./col --> 
-						{% empty %}
-								
-						{% endfor %}                    
-                    </div><!-- /.row -->
+				{% if personal.usuario.is_superuser %}
+					{% for dato in proyectos %}
+						<div class="panel panel-success">
+						  <div class="panel-heading">
+						    <h3 class="panel-title"><a href="">{{dato.nombreProyecto|capfirst}} - {{dato.fechaInicio|date:"j F, Y"}}</a></h3>						    
+						  </div>
+						  <div class="panel-body">
+						    {{dato.descripcion|capfirst}}
+						  </div>
+						</div>
+					{% empty %}
+						<div class="alert alert-warning" role="alert">Aún no has registrado ningún proyecto.</div>
+					{% endfor %}
+				{% else %}
+					{% for dato in proyectos %}
+						<div class="panel panel-success">
+						  <div class="panel-heading">
+						    <h3 class="panel-title"><a href="">{{dato.proyecto.nombreProyecto|capfirst}} - {{dato.proyecto.fechaInicio|date:"j F, Y"}}</h3>						    
+						  </div>
+						  <div class="panel-body">
+						    {{dato.proyecto.descripcion|capfirst}}
+						  </div>
+						</div>
+					{% empty %}
+						<div class="alert alert-warning" role="alert">No hay ningún proyecto en el que estés colaborando.</div>
+					{% endfor %}
+				{% endif %}
 
 {% endblock %}                        

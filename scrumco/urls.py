@@ -17,4 +17,7 @@ urlpatterns = patterns('',
     url(r'^cerrar','principal.views.cerrar'),
     url(r'^miembros', 'principal.views.lista_miembros'),
     url(r'^miembro/nuevo/$', 'principal.views.nuevo_miembro'),
+    url(r'^proyectos', 'principal.views.lista_proyectos'),
+    url(r'^proyecto/nuevo/$', 'principal.views.nuevo_proyecto'),
+    url(r'^rolequipo/$', 'principal.views.rol_equipo'),
 )

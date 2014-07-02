@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro
+from principal.models import Personal, Miembro, Proyecto, Equipo
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,9 +8,10 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-import re, datetime
+import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from forms import ProyectoForm, UserForm
 # Create your views here.
 
 def inicio(request):
@@ -45,6 +46,8 @@ def ingresar(request):
                     return render_to_response('noactivo.html', context_instance=RequestContext(request))
             else:
                 return render_to_response('nousuario.html', context_instance=RequestContext(request))
+        else:
+            return HttpResponseRedirect('/noFormularioValido')
     else:
         formulario = AuthenticationForm()
     return render_to_response('ingresar.html',{'formulario':formulario}, context_instance=RequestContext(request))
@@ -53,7 +56,7 @@ def ingresar(request):
 def registro(request):
     if request.method == 'POST':
         formulario = UserCreationForm(request.POST)
-        if formulario.is_valid:
+        if formulario.is_valid():
             empresa = request.POST['empresa']
             usuario = request.POST['username']
             clave = request.POST['password1']
@@ -98,7 +101,7 @@ def cerrar(request):
     logout(request)
     return HttpResponseRedirect('/')
 
-
+@login_required(login_url='/ingresar')
 def lista_miembros(request):
     usuario=request.user
     if usuario.is_authenticated():
@@ -114,14 +117,15 @@ def lista_miembros(request):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
-    
+
+@login_required(login_url='/ingresar')   
 def nuevo_miembro(request):
     usuario=request.user
     if usuario.is_authenticated():
         personal=Personal.objects.get(usuario=usuario.id)
     if request.method == 'POST':
         formulario = UserCreationForm(request.POST)
-        if formulario.is_valid:
+        if formulario.is_valid():
             usuario = request.POST['username']
             clave = request.POST['password1']
             clave2 = request.POST['password2']
@@ -152,9 +156,73 @@ def nuevo_miembro(request):
                 )
                 m.save()                  
                 return HttpResponseRedirect('/miembros')
+        else:
+            return HttpResponseRedirect('/noFormularioValido')
     else:
         formulario = UserCreationForm()
     return render_to_response('registromiembro.html',{'formulario':formulario}, context_instance=RequestContext(request))
 
 
+@login_required(login_url='/ingresar')
+def lista_proyectos(request):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyectos=Proyecto.objects.filter(jefeProyecto=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyectos=Equipo.objects.filter(miembro=personal.id)
+          
+    if usuario.is_authenticated():
+        return render_to_response('proyectos.html',{'personal':personal, 'proyectos':proyectos}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+@login_required(login_url='/ingresar')    
+def nuevo_proyecto(request):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            miembros = Miembro.objects.filter(jefe=personal.id)
+    if request.method == 'POST':
+        formulario=ProyectoForm(request.POST)
+        if formulario.is_valid():
+            nombreProyecto = request.POST['nombreProyecto']
+            fechaInicio = request.POST['fechaInicio']
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            descripcion = request.POST['descripcion']
+            foco = request.POST['foco']
+            equipo = request.POST.getlist('equipo')
+            if not nombreProyecto or not fechaInicio or not descripcion or not equipo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = Proyecto.objects.get(nombreProyecto=nombreProyecto)
+                    return HttpResponseRedirect('/proyectoexiste')
+                except:
+                    #try:                        
+                        p=formulario.save(commit=False)
+                        p.historiasP = 0
+                        p.spProyecto = 0
+                        p.jefeProyecto = personal
+                        p.save()
+                    #except:
+                        #return HttpResponseRedirect('/passdiferentes')
+                
+                for dato in equipo:
+                    e = Equipo.objects.create(                       
+                        proyecto = p,
+                        miembro = Miembro.objects.get(id=dato),
+                    )
+                    e.save()                  
+            return HttpResponseRedirect('/proyectos')
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = ProyectoForm()
+    return render_to_response('registroproyecto.html',{'formulario':formulario, 'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
 
