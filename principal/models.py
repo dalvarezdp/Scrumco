@@ -49,5 +49,27 @@ class Equipo(models.Model):
     proyecto = models.ForeignKey(Proyecto)
     miembro = models.ForeignKey(Miembro)
     def __unicode__(self):
-        return str(self.miembro)    
+        return str(self.miembro)
+    
 
+class historia(models.Model):
+    titulo = models.CharField(max_length=100, unique=True)
+    prioridad = models.IntegerField(blank="true", null="true")
+    sp = models.IntegerField(blank="true", null="true")
+    descripcion = models.TextField()
+    aceptacion = models.TextField()
+    proyecto = models.ForeignKey(Proyecto)
+    creador = models.ForeignKey(User)
+    def __unicode__(self):
+        return str(self.proyecto)
+
+
+class tarea(models.Model):
+    resumen = models.CharField(max_length=100, unique=True)
+    descripcion = models.TextField()
+    esfuerzo = models.IntegerField(blank="true", null="true")
+    estado = models.IntegerField(blank="true", null="true")
+    proyecto = models.ForeignKey(Proyecto)
+    creador = models.ForeignKey(User)
+    def __unicode__(self):
+        return str(self.proyecto)

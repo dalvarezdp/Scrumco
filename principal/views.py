@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro, Proyecto, Equipo
+from principal.models import Personal, Miembro, Proyecto, Equipo, historia
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from forms import ProyectoForm, UserForm
+from forms import ProyectoForm, UserForm, HistoriaForm
 # Create your views here.
 
 def inicio(request):
@@ -225,4 +225,85 @@ def nuevo_proyecto(request):
     else:
         formulario = ProyectoForm()
     return render_to_response('registroproyecto.html',{'formulario':formulario, 'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
+
+
+
+@login_required(login_url='/ingresar')    
+def detalle_proyecto(request, id_proyecto):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+          
+    if usuario.is_authenticated():
+        return render_to_response('detalleproyecto.html', {'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+@login_required(login_url='/ingresar')    
+def lista_historias(request, id_proyecto):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+          
+    if usuario.is_authenticated():
+        return render_to_response('historias.html', {'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def nueva_historia(request, id_proyecto):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=id_proyecto)
+    if request.method == 'POST':
+        formulario=HistoriaForm(request.POST)
+        if formulario.is_valid():
+            titulo = request.POST['titulo']
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            sp = request.POST['sp']
+          
+            if not titulo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = historia.objects.get(titulo=titulo)
+                    return HttpResponseRedirect('/historiaexiste')
+                except:
+                    #try:                        
+                        p=formulario.save(commit=False)
+                        p.proyecto = proyecto
+                        p.creador = usuario
+                        p.save()
+                    #except:
+                        #return HttpResponseRedirect('/passdiferentes')
+                        e = Proyecto.objects.get(pk=id_proyecto)
+                        e.historiasP += 1
+                        e.spProyecto += int(sp)
+                        e.save()
+            
+            return HttpResponseRedirect(reverse('lista_historias',args=[id_proyecto]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = HistoriaForm()
+    return render_to_response('registrohistoria.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
+
+
+
+
 

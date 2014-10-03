@@ -25,16 +25,26 @@
                 $('.slider').slider();
 
                 /* ION SLIDER */
-                $("#foco").ionRangeSlider({
+                $("#prioridad").ionRangeSlider({
                     min: 0,
                     max: 100,
-                    from: 70,
+                    from: 50,
                     type: 'single',
-                    step: 10,
+                    step: 5,
                     postfix: " %",
                     prettify: false,
                     hasGrid: true
                 });
+                $("#sp").ionRangeSlider({
+                	min: 0,
+                    max: 100,
+				    from: 0,
+                    type: 'single',
+                    step: 1,
+                    postfix: " SP",
+                    prettify: false,
+                    hasGrid: true
+				});
             });
         </script>
 
@@ -290,12 +300,22 @@
                         </li>
                         <li class="active">
                             <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Proyectos</span> <small class="badge pull-right bg-green">nuevo</small>
+                                <i class="fa fa-th"></i> <span>Product backlog</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/miembros">
-                                <i class="fa fa-users"></i><span>Miembros</span>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Sprint</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Planning poker</span>
                             </a>
                         </li>
 {% endblock %}
@@ -303,7 +323,7 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Nuevo proyecto
+                        Nueva historia
                     </h1>
                     <ol class="breadcrumb">
                         
@@ -322,25 +342,22 @@
 	                            <!-- general form elements -->
 	                            <div class="box box-primary">
 	                                <div class="box-header">
-	                                    <h3 class="box-title">Información del proyecto</h3>
+	                                    <h3 class="box-title">Información de la historia</h3>
 	                                </div><!-- /.box-header -->	   
 	                                    <div class="box-body">                         	
 	                                    	<div class="form-group">
-	                                    		<label>Nombre</label>
-						                        <input type="text" name="nombreProyecto" id="nombreProyecto" class="form-control" placeholder="nombre"/>
-						                    </div>
-						                    <div class="form-group">
-						                    	<label>Fecha inicio</label>
-						                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" placeholder="fecha"/>
+	                                    		<label>Título</label>
+						                        <input type="text" name="titulo" id="titulo" class="form-control" placeholder="Título"/>
 						                    </div>
 						                    <div class="form-group">
 						                    	<label>Descripción</label>
-						                    	<textarea class="form-control" name="descripcion" id="descricion" rows="3" placeholder="Descripción"></textarea>
+						                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción"></textarea>
 						                    </div>
 						                    <div class="form-group">
-						                    	<label>Factor de foco</label>
-						                    	<input id="foco" type="text"  name="foco" value="" />
+						                    	<label>Criterio de aceptación</label>
+						                    	<textarea class="form-control" name="aceptacion" id="aceptacion" rows="3" placeholder="Criterio de aceptación"></textarea>
 						                    </div>
+						                    
 	                                    </div><!-- /.box-body -->	
 	                                    <div class="box-footer">
 	                                        <button type="submit" class="btn btn-primary">Añadir proyecto</button>
@@ -352,18 +369,18 @@
 	                            <!-- general form elements disabled -->
 	                            <div class="box box-warning">
 	                                <div class="box-header">
-	                                    <h3 class="box-title">Equipo del proyecto</h3>
+	                                    <h3 class="box-title">Datos de la historia</h3>
 	                                </div><!-- /.box-header -->                               	                                    
 	                                    <div class="box-body">
 	                                    	<div class="form-group">
-	                                    		<label>Seleccionar miembros</label>
-						                        <select multiple="multiple" name="equipo" class="form-control">
-							                        {% for dato in miembros %}
-							                        	<option value="{{dato.id}}">{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
-													{% empty %}
-															
-													{% endfor %}                    
-												</select>
+	                                    		<div class="form-group">
+							                    	<label>Prioridad</label>
+							                    	<input id="prioridad" type="text"  name="prioridad" value="" />
+							                    </div>
+							                    <div class="form-group">
+							                    	<label>SP</label>
+							                    	<input id="sp" type="text"  name="sp" value="" />
+							                    </div>
 						                        
 						                    </div>            
 		                                </div><!-- /.box-body -->	                                                                
@@ -378,4 +395,4 @@
 				<button type="submit" class="btn btn-primary">Añadir proyecto</button>
 			</form>
 			{% endcomment %}
-{% endblock %}   
+{% endblock %}                        
