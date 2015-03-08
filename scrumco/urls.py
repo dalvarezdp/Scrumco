@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^proyecto/nuevo/$', 'principal.views.nuevo_proyecto'),
     #url(r'^rolequipo/$', 'principal.views.rol_equipo'),
     url(r'^proyecto/(?P<id_proyecto>\d+)$','principal.views.detalle_proyecto', name='detalle_proyecto'),
-    url(r'^historias/(?P<id_proyecto>\d+)$', 'principal.views.lista_historias', name='lista_historias'),
+    url(r'^historia/(?P<id_historia>\d+)$','principal.views.detalle_historia', name='detalle_historia'),
+    url(r'^historias/(?P<id_proyecto>\d+)$', 'principal.views.lista_historias', name='lista_historias'),   
     url(r'^historia/nueva/(?P<id_proyecto>\d+)$', 'principal.views.nueva_historia', name='nueva_historia'),
 )

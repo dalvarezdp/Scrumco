@@ -69,7 +69,8 @@ class tarea(models.Model):
     descripcion = models.TextField()
     esfuerzo = models.IntegerField(blank="true", null="true")
     estado = models.IntegerField(blank="true", null="true")
+    historia = models.ForeignKey(historia)
     proyecto = models.ForeignKey(Proyecto)
     creador = models.ForeignKey(User)
     def __unicode__(self):
-        return str(self.proyecto)
+        return str(self.historia)

@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro, Proyecto, Equipo, historia
+from principal.models import Personal, Miembro, Proyecto, Equipo, historia, tarea
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -248,16 +248,17 @@ def detalle_proyecto(request, id_proyecto):
 @login_required(login_url='/ingresar')    
 def lista_historias(request, id_proyecto):
     usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
-            proyecto=Proyecto.objects.get(id=id_proyecto)
+            historias=historia.objects.filter(proyecto_id=id_proyecto)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
-            proyecto=Proyecto.objects.get(id=id_proyecto)
+            historias=historia.objects.filter(proyecto_id=id_proyecto)
           
     if usuario.is_authenticated():
-        return render_to_response('historias.html', {'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+        return render_to_response('historias.html', {'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
@@ -302,6 +303,27 @@ def nueva_historia(request, id_proyecto):
     else:
         formulario = HistoriaForm()
     return render_to_response('registrohistoria.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def detalle_historia(request, id_historia):
+    usuario=request.user
+    Historia=historia.objects.get(id=id_historia)
+    proyecto=Proyecto.objects.get(id=Historia.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=tarea.objects.filter(historia_id=id_historia)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=tarea.objects.filter(historia_id=id_historia)
+          
+    if usuario.is_authenticated():
+        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':Historia}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
+
 
 
 

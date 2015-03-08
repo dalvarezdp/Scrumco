@@ -280,23 +280,23 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Historias
+                        Tareas
                     </h1>
                     <ol class="breadcrumb">
                     	{% if personal.usuario.is_superuser %}
-                        	<li><a href="{% url 'principal.views.nueva_historia' proyecto.id %}"><i class="fa fa-plus"></i> Nueva historia</a></li>
+                        	<li><a href="{% url 'principal.views.nueva_historia' proyecto.id %}"><i class="fa fa-plus"></i> Nueva tarea</a></li>
                         {% endif %} 
                     </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
-
+				{{historia.titulo|capfirst}}
 				{% if personal.usuario.is_superuser %}
-					{% for dato in historias %}
+					{% for dato in tareas %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.resumen|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
 						    {{dato.descripcion|capfirst}}
@@ -306,10 +306,10 @@
 						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia para este proyecto.</div>
 					{% endfor %}
 				{% else %}
-					{% for dato in historias %}
+					{% for dato in tareas %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.resumen|capfirst}}</h3>						    
 						  </div>
 						  <div class="panel-body">
 						    {{dato.descripcion|capfirst}}
