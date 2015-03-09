@@ -359,7 +359,11 @@
 	                                    		<label>Seleccionar miembros</label>
 						                        <select multiple="multiple" name="equipo" class="form-control">
 							                        {% for dato in miembros %}
-							                        	<option value="{{dato.id}}">{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
+							                        	{% if not dato.usuario.first_name %}
+															<option value="{{dato.id}}">{{dato.usuario.username|capfirst}}</option>
+														{% else %}
+															<option value="{{dato.id}}">{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
+														{% endif %}  	
 													{% empty %}
 															
 													{% endfor %}                    

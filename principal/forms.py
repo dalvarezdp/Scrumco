@@ -1,7 +1,7 @@
 #encoding:utf-8
 from django.forms import ModelForm
 from django import forms
-from principal.models import Personal, Proyecto, historia
+from principal.models import Personal, Proyecto, Historia
 from django.contrib.auth.models import User
 
 
@@ -17,6 +17,6 @@ class ProyectoForm(ModelForm):
         
 class HistoriaForm(ModelForm):
     class Meta:
-        model = historia
-        exclude = ['proyecto', 'creador']
+        model = Historia
+        exclude = ['proyecto', 'creador', 'estado']
 

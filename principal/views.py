@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro, Proyecto, Equipo, historia, tarea
+from principal.models import Personal, Miembro, Proyecto, Equipo, Historia, Tarea, Sprint
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -81,6 +81,14 @@ def registro(request):
                         empresa = request.POST['empresa']
                     )
                     p.save()
+                    m = Miembro.objects.create(
+                        foto = "default",
+                        usuario = u,
+                        jefe = p,
+                        empresa = request.POST['empresa']
+                    )
+                    m.save()
+                  
                 except:
                     e = User.objects.get(username=usuario)
                     e.delete()
@@ -107,10 +115,10 @@ def lista_miembros(request):
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
-            miembros = Miembro.objects.filter(jefe=personal.id)
+            miembros = Miembro.objects.filter(jefe=personal.id).exclude(usuario=personal.usuario)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
-            miembros = Miembro.objects.filter(jefe=personal.jefe)
+            miembros = Miembro.objects.filter(jefe=personal.jefe).exclude(usuario=personal.jefe.usuario)
           
     if usuario.is_authenticated():
         return render_to_response('miembros.html',{'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
@@ -212,7 +220,6 @@ def nuevo_proyecto(request):
                         p.save()
                     #except:
                         #return HttpResponseRedirect('/passdiferentes')
-                
                 for dato in equipo:
                     e = Equipo.objects.create(                       
                         proyecto = p,
@@ -252,10 +259,10 @@ def lista_historias(request, id_proyecto):
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
-            historias=historia.objects.filter(proyecto_id=id_proyecto)
+            historias=Historia.objects.filter(proyecto_id=id_proyecto)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
-            historias=historia.objects.filter(proyecto_id=id_proyecto)
+            historias=Historia.objects.filter(proyecto_id=id_proyecto)
           
     if usuario.is_authenticated():
         return render_to_response('historias.html', {'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
@@ -282,11 +289,12 @@ def nueva_historia(request, id_proyecto):
                 return HttpResponseRedirect('/rellenarcampos')
             else:
                 try:              
-                    existe = historia.objects.get(titulo=titulo)
+                    existe = Historia.objects.get(titulo=titulo)
                     return HttpResponseRedirect('/historiaexiste')
                 except:
                     #try:                        
                         p=formulario.save(commit=False)
+                        p.estado = 0
                         p.proyecto = proyecto
                         p.creador = usuario
                         p.save()
@@ -308,18 +316,18 @@ def nueva_historia(request, id_proyecto):
 @login_required(login_url='/ingresar')    
 def detalle_historia(request, id_historia):
     usuario=request.user
-    Historia=historia.objects.get(id=id_historia)
-    proyecto=Proyecto.objects.get(id=Historia.proyecto.id)
+    historia=Historia.objects.get(id=id_historia)
+    proyecto=Proyecto.objects.get(id=historia.proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
-            tareas=tarea.objects.filter(historia_id=id_historia)
+            tareas=Tarea.objects.filter(historia_id=id_historia)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
-            tareas=tarea.objects.filter(historia_id=id_historia)
+            tareas=Tarea.objects.filter(historia_id=id_historia)
           
     if usuario.is_authenticated():
-        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':Historia}, context_instance=RequestContext(request))
+        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
