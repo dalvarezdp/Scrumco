@@ -24,4 +24,5 @@ urlpatterns = patterns('',
     url(r'^historia/(?P<id_historia>\d+)$','principal.views.detalle_historia', name='detalle_historia'),
     url(r'^historias/(?P<id_proyecto>\d+)$', 'principal.views.lista_historias', name='lista_historias'),   
     url(r'^historia/nueva/(?P<id_proyecto>\d+)$', 'principal.views.nueva_historia', name='nueva_historia'),
+    url(r'^tarea/nueva/py/(?P<id_proyecto>\d+)/ht/(?P<id_historia>\d+)$', 'principal.views.nueva_tarea', name='nueva_tarea'),
 )

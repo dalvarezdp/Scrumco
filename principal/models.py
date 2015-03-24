@@ -82,7 +82,7 @@ class Tarea(models.Model):
     esfuerzo = models.IntegerField(blank="true", null="true")
     estado = models.IntegerField(blank="true", null="true")
     realizador = models.ForeignKey(Equipo, blank="true", null="true")
-    sprint = models.ForeignKey(Sprint)
+    sprint = models.ForeignKey(Sprint, blank="true", null="true")
     historia = models.ForeignKey(Historia)
     proyecto = models.ForeignKey(Proyecto)
     creador = models.ForeignKey(User)

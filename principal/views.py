@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from forms import ProyectoForm, UserForm, HistoriaForm
+from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm
 # Create your views here.
 
 def inicio(request):
@@ -331,6 +331,43 @@ def detalle_historia(request, id_historia):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
+@login_required(login_url='/ingresar')    
+def nueva_tarea(request, id_proyecto, id_historia):
+    usuario=request.user
+    historia=Historia.objects.get(pk=id_historia)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=id_proyecto)
+    if request.method == 'POST':
+        formulario=TareaForm(request.POST)
+        if formulario.is_valid():
+            resumen = request.POST['resumen']           
+            descripcion = request.POST['descripcion']
+          
+            if not resumen:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = Tarea.objects.get(resumen=resumen)
+                    return HttpResponseRedirect('/tareaexiste')
+                except:
+                    #try:                        
+                        p=formulario.save(commit=False)
+                        p.estado = 0
+                        p.historia = historia
+                        p.proyecto = proyecto
+                        p.creador = usuario
+                        p.save()
+                    #except:
+                        #return HttpResponseRedirect('/passdiferentes')                     
+            
+            return HttpResponseRedirect(reverse('detalle_historia',args=[id_proyecto]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = TareaForm()
+    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
 
 
 
