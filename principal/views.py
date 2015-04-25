@@ -310,7 +310,7 @@ def nueva_historia(request, id_proyecto):
             return HttpResponseRedirect('/formularioNoValido')
     else:
         formulario = HistoriaForm()
-    return render_to_response('registrohistoria.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
+    return render_to_response('registrohistoria.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/ingresar')    
@@ -367,7 +367,7 @@ def nueva_tarea(request, id_proyecto, id_historia):
             return HttpResponseRedirect('/formularioNoValido')
     else:
         formulario = TareaForm()
-    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
+    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/ingresar')    
@@ -454,6 +454,23 @@ def nuevo_sprint(request, id_proyecto):
             return HttpResponseRedirect('/formularioNoValido')
     else:
         formulario = SprintForm()
-    return render_to_response('registrosprint.html',{'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias}, context_instance=RequestContext(request))
+    return render_to_response('registrosprint.html',{'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
 
 
+@login_required(login_url='/ingresar')    
+def detalle_sprint(request, id_sprint):
+    usuario=request.user
+    historia=Historia.objects.get(id=id_historia)
+    proyecto=Proyecto.objects.get(id=historia.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia_id=id_historia)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia_id=id_historia)
+          
+    if usuario.is_authenticated():
+        return render_to_response('detallesprint.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
