@@ -72,6 +72,7 @@ class Historia(models.Model):
     estado = models.IntegerField(blank="true", null="true")
     proyecto = models.ForeignKey(Proyecto)
     creador = models.ForeignKey(User)
+    sprint = models.ForeignKey(Sprint, blank="true", null="true")
     def __unicode__(self):
         return str(self.proyecto)
 
@@ -82,7 +83,6 @@ class Tarea(models.Model):
     esfuerzo = models.IntegerField(blank="true", null="true")
     estado = models.IntegerField(blank="true", null="true")
     realizador = models.ForeignKey(Equipo, blank="true", null="true")
-    sprint = models.ForeignKey(Sprint, blank="true", null="true")
     historia = models.ForeignKey(Historia)
     proyecto = models.ForeignKey(Proyecto)
     creador = models.ForeignKey(User)

@@ -2,9 +2,47 @@
 
 {% block titulo %}ScrumCO{% endblock %}
 
-{% block style_css %}{% endblock %}
+{% block style_css %}
+		<!-- Ion Slider -->
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.css" rel="stylesheet" type="text/css" />
+        <!-- ion slider Nice -->
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinNice.css" rel="stylesheet" type="text/css" />
+        <!-- bootstrap slider -->
+        <link href="{{STATIC_URL}}css/bootstrap-slider/slider.css" rel="stylesheet" type="text/css" />
 
-{% block script %}{% endblock %}
+{% endblock %}
+
+{% block script %}
+
+		<!-- Ion Slider -->
+        <script src="{{STATIC_URL}}js/plugins/ionslider/ion.rangeSlider.min.js" type="text/javascript"></script>
+        <!-- Bootstrap slider -->
+        <script src="{{STATIC_URL}}js/plugins/bootstrap-slider/bootstrap-slider.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+            $(function() {
+                /* BOOTSTRAP SLIDER */
+                $('.slider').slider();
+			
+				{% for dato in equipo %}
+	                /* ION SLIDER */
+	                $("#foco_{{dato.id}}").ionRangeSlider({
+	                    min: 0,
+	                    max: 100,
+	                    from: 100,
+	                    type: 'single',
+	                    step: 10,
+	                    postfix: " %",
+	                    prettify: false,
+	                    hasGrid: true
+	                });
+	            {% empty %}
+															
+				{% endfor %}   
+            });
+        </script>
+
+{% endblock %}
 
 {% block notimensajes %}
 						<!-- Messages: style can be found in dropdown.less-->
@@ -255,70 +293,183 @@
                             </a>
                         </li>
                         <li class="active">
-                            <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
-                                <i class="fa fa-th"></i> <span>Product backlog</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
-                                <i class="fa fa-th"></i> <span>Sprints</span>
-                            </a>
-                        </li>
-                        <li>
                             <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Calendario</span>
+                                <i class="fa fa-th"></i> <span>Proyectos</span> <small class="badge pull-right bg-green">nuevo</small>
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Planning poker</span>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
                             </a>
                         </li>
-                 
 {% endblock %}
 
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Historias
+                        Nuevo sprint
                     </h1>
                     <ol class="breadcrumb">
-                    	{% if personal.usuario.is_superuser %}
-                        	<li><a href="{% url 'principal.views.nueva_historia' proyecto.id %}"><i class="fa fa-plus"></i> Nueva historia</a></li>
-                        {% endif %} 
+                        
                     </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
+			
+				<section class="content">
+					<!-- form start -->
+                    <form action="" method="post">{% csrf_token %}
+	                    <div class="row">
+	                    	<div class="col-xs-12">
+	                            <div class="box">
+	                            {% if historias %}
+	                                <div class="box-header">
+	                                    <h3 class="box-title">Historias del proyecto</h3>
+	                                    
+	                                </div><!-- /.box-header -->
+	                                <div class="box-body table-responsive no-padding">
+	                                    <table class="table table-hover">
+	                                        <tr>
+	                                        	<th></th>
+				                              	<th>ID</th>
+				                                <th>Título</th>
+				                                <th>Descripción</th>
+				                                <th>Estado</th>
+				                            </tr>
+	                                        {% for dato in historias %}
+				                              <tr>
+				                              	<td><input type="checkbox" name="historiasSprint" value="{{dato.id}}"><br></td>
+				                                <td>{{dato.id}}</td>
+				                                <td>{{dato.titulo|capfirst}}</td>
+				                                <td>{{dato.descripcion|capfirst}}</td>
+				                                <td><span class="label label-warning">Pendiente</span></td>                                
+				                              </tr>						  
+											{% endfor %}
+					      
+	                                    </table>
+	                                </div><!-- /.box-body -->
+	                            {% else %}
+									<div class="alert alert-warning" role="alert">Aún no hay ninguna historia en el proyecto.</div>							  
+					
+								{% endif %}
+	                            </div><!-- /.box -->
+	                        </div>
+	                        <!-- left column -->
+	                        <div class="col-md-6">
+	                            <!-- general form elements -->
+	                            <div class="box box-primary">
+	                                <div class="box-header">
+	                                    <h3 class="box-title">Información del sprint</h3>
+	                                </div><!-- /.box-header -->	   
+	                                    <div class="box-body">                         	
+	                                    	<div class="form-group">
+	                                    		<label>Nombre</label>
+						                        <input type="text" name="nombre" id="nombre" class="form-control" placeholder="nombre"/>
+						                    </div>
+						                    <div class="form-group">
+						                    	<label>Objetivo</label>
+						                    	<textarea class="form-control" name="Objetivo" id="Objetivo" rows="3" placeholder="Objetivo"></textarea>
+						                    </div>
+						                    <div class="row">
+											  <div class="col-xs-6">
+												  <div class="form-group">
+							                    	<label>Fecha inicio</label>
+							                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" placeholder="fecha"/>						                    	
+							                  	  </div>
+							                  </div>
+											  <div class="col-xs-6">
+												<div class="form-group">
+							                    	<label>Fecha Revisión</label>
+							                        <input type="date" name="fechaRevision" id="fechaRevision" class="form-control" placeholder="fecha"/>
+							                    </div>	
+											  </div>
+											</div>
+											<div class="row">
+											  <div class="col-xs-6">
+												<div class="form-group">
+												    <label for="disabledTextInput">Duración</label>
+												    <select class="form-control" name="duracion" id="duracion">
+												    	<option value="1">1 semana</option>		
+												    	<option value="2">2 semana</option>		
+												    	<option value="3">3 semana</option>		
+												    	<option value="4">4 semana</option>			  
+													</select>
+												</div>
+							                  </div>
+											  <div class="col-xs-6">
+											  	
 
-				{% if personal.usuario.is_superuser %}
-					{% for dato in historias %}
-						<div class="panel panel-success">
-						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
-						  </div>
-						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
-						  </div>
-						</div>
-					{% empty %}
-						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia para este proyecto.</div>
-					{% endfor %}
-				{% else %}
-					{% for dato in historias %}
-						<div class="panel panel-success">
-						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</h3>						    
-						  </div>
-						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
-						  </div>
-						</div>
-					{% empty %}
-						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia para este proyecto.</div>
-					{% endfor %}
-				{% endif %}
-
-
-{% endblock %}                        
+												<div class="form-group">
+													<br />
+													<div class="checkbox">
+				                                        <label>
+				                                            <input type="checkbox" name="finSemana" id="finSemana" value="1"/>
+				                                            Fines de semana
+				                                        </label>
+			                                    	</div>
+			                                    </div>	
+											  </div>
+											</div>
+	                                    </div><!-- /.box-body -->	
+	                                    <div class="box-footer">
+	                                        <button type="submit" class="btn btn-primary">Añadir proyecto</button>
+	                                    </div>	           
+	                            </div><!-- /.box -->
+	                        </div><!--/.col (left) -->
+	                        <!-- right column -->
+	                        <div class="col-md-6">
+	                            <!-- general form elements disabled -->
+	                            <div class="box box-warning">
+	                                <div class="box-header">
+	                                    <h3 class="box-title">Equipo del proyecto</h3>
+	                                </div><!-- /.box-header -->                               	                                    
+	                                    <div class="box-body">
+	                                    	<div class="form-group">
+							                        {% for dato in equipo %}
+							                        	{% if not dato.miembro.usuario.first_name %}
+							                        		{% if dato.scrummaster %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.username|capfirst}} (Scrum Master)</label>
+							                        		{% endif %}
+							                        		{% if dato.teammember %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.username|capfirst}} (Team Member)</label>
+							                        		{% endif %}
+							                        		{% if dato.productowner %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.username|capfirst}} (Product Owner)</label>
+							                        		{% endif %}
+															<div class="form-group">
+										                    	<label>Dedicación</label>
+										                    	<input id="foco_{{dato.id}}" type="text"  name="foco_{{dato.id}}" value="" />
+										                    </div>
+														{% else %}
+															{% if dato.scrummaster %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.first_name|capfirst}} {{dato.miembro.usuario.last_name|capfirst}} (Scrum Master)</label>
+							                        		{% endif %}
+							                        		{% if dato.teammember %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.first_name|capfirst}} {{dato.miembro.usuario.last_name|capfirst}} (Team Member)</label>
+							                        		{% endif %}
+							                        		{% if dato.productowner %}
+							                        			<label>Dedicación de {{dato.miembro.usuario.first_name|capfirst}} {{dato.miembro.usuario.last_name|capfirst}} (Product Owner)</label>
+							                        		{% endif %}
+															<div class="form-group">
+										                    	<input id="foco_{{dato.id}}" type="text"  name="foco_{{dato.id}}" value="" />
+										                    </div>
+														{% endif %}  	
+													{% empty %}
+															
+													{% endfor %}                    
+						                    </div> 	                                        
+		                                </div><!-- /.box-body -->	  		                                                                                              
+	                            </div><!-- /.box -->
+	                            
+	                        </div><!--/.col (right) -->
+	                    </div>   <!-- /.row -->
+					</form>	                   
+                </section><!-- /.content -->
+			{% comment %}
+			<form action="" method="post">{% csrf_token %}
+				{{formulario.as_p}}
+				<button type="submit" class="btn btn-primary">Añadir proyecto</button>
+			</form>
+			{% endcomment %}
+{% endblock %}   

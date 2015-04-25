@@ -254,12 +254,12 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
                                 <i class="fa fa-th"></i> <span>Product backlog</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
                                 <i class="fa fa-th"></i> <span>Sprints</span>
                             </a>
@@ -280,11 +280,11 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Historias
+                        Sprints
                     </h1>
                     <ol class="breadcrumb">
                     	{% if personal.usuario.is_superuser %}
-                        	<li><a href="{% url 'principal.views.nueva_historia' proyecto.id %}"><i class="fa fa-plus"></i> Nueva historia</a></li>
+                        	<li><a href="{% url 'principal.views.nuevo_sprint' proyecto.id %}"><i class="fa fa-plus"></i> Nuevo Sprint</a></li>
                         {% endif %} 
                     </ol>
                 </section>
@@ -293,30 +293,30 @@
 {% block contenido %}
 
 				{% if personal.usuario.is_superuser %}
-					{% for dato in historias %}
+					{% for dato in sprints %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_sprint' dato.id %}'>{{dato.nombre|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
+						    {{dato.Objetivo|capfirst}}
 						  </div>
 						</div>
 					{% empty %}
-						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia para este proyecto.</div>
+						<div class="alert alert-warning" role="alert">Aún no hay ningún Sprint para este proyecto.</div>
 					{% endfor %}
 				{% else %}
-					{% for dato in historias %}
+					{% for dato in sprints %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_sprint' dato.id %}'>{{dato.nombre|capfirst}}</h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
+						    {{dato.Objetivo|capfirst}}
 						  </div>
 						</div>
 					{% empty %}
-						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia para este proyecto.</div>
+						<div class="alert alert-warning" role="alert">Aún no hay ningún Sprint para este proyecto.</div>
 					{% endfor %}
 				{% endif %}
 

@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import re
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
-from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm
+from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm
 # Create your views here.
 
 def inicio(request):
@@ -370,7 +370,90 @@ def nueva_tarea(request, id_proyecto, id_historia):
     return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal}, context_instance=RequestContext(request))
 
 
+@login_required(login_url='/ingresar')    
+def lista_sprints(request, id_proyecto):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprints.html', {'personal':personal, 'sprints':sprints, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
 
 
+@login_required(login_url='/ingresar')    
+def nuevo_sprint(request, id_proyecto):
+    dedicaciones=[]
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+            personal=Personal.objects.get(usuario=usuario.id)
+            equipo = Equipo.objects.filter(proyecto_id=id_proyecto).order_by('id')
+            historias=Historia.objects.filter(proyecto_id=id_proyecto)
+
+    if request.method == 'POST':
+        formulario=SprintForm(request.POST)
+        if formulario.is_valid():
+            nombreSprint = request.POST['nombre']
+            fechaInicio = request.POST['fechaInicio']
+            objetivo = request.POST['Objetivo']
+            duracion = request.POST['duracion']
+            fechaRevision = request.POST['fechaRevision']
+            finSemana = request.POST['finSemana']
+            historiasSprint = request.POST.getlist('historiasSprint')
+            
+            print historiasSprint
+            
+            for dato in equipo:
+                dedicaciones.append(request.POST['foco_'+str(dato.id)])  
+
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            
+            if not nombreSprint or not fechaInicio or not objetivo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = Sprint.objects.get(nombre=nombreSprint)
+                    return HttpResponseRedirect('/sprintexiste')
+                except:
+                    #try:                       
+                        p=formulario.save(commit=False)
+                        p.estado = 1
+                        p.nTareas = 0
+                        p.hEstimadas = 0
+                        p.hPendientes = 0
+                        p.proyecto = proyecto
+                        p.save()
+                    #except:
+                        #return HttpResponseRedirect('/passdiferentes')
+                        
+                        #Agrego al equipo la dedicacion y el sprint
+                        for i in range(len(equipo)):
+                            equipo[i].dedicacion = dedicaciones[i]
+                            equipo[i].sprint = p
+                            equipo[i].save() 
+                        
+                        for dato in historiasSprint: 
+                            historia = Historia.objects.get(id=dato)   
+                            print historia        
+                            historia.sprint = p
+                            historia.save()
+                            
+                                  
+            return HttpResponseRedirect(reverse('lista_sprints',args=[id_proyecto]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SprintForm()
+    return render_to_response('registrosprint.html',{'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias}, context_instance=RequestContext(request))
 
 
