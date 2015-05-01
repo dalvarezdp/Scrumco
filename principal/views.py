@@ -9,7 +9,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm
 # Create your views here.
@@ -410,7 +410,14 @@ def nuevo_sprint(request, id_proyecto):
             finSemana = request.POST['finSemana']
             historiasSprint = request.POST.getlist('historiasSprint')
             
+            fechaInicio = datetime.strptime(fechaInicio,'%Y-%m-%d')
+            
             print historiasSprint
+            print fechaInicio
+            
+            fechaFin = fechaInicio + timedelta(days=(7*(int(duracion))))
+            
+            print fechaFin
             
             for dato in equipo:
                 dedicaciones.append(request.POST['foco_'+str(dato.id)])  
@@ -427,6 +434,7 @@ def nuevo_sprint(request, id_proyecto):
                 except:
                     #try:                       
                         p=formulario.save(commit=False)
+                        p.fechaFin = fechaFin
                         p.estado = 1
                         p.nTareas = 0
                         p.hEstimadas = 0
@@ -460,17 +468,38 @@ def nuevo_sprint(request, id_proyecto):
 @login_required(login_url='/ingresar')    
 def detalle_sprint(request, id_sprint):
     usuario=request.user
-    historia=Historia.objects.get(id=id_historia)
-    proyecto=Proyecto.objects.get(id=historia.proyecto.id)
+    sprint = Sprint.objects.get(id=id_sprint)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
-            tareas=Tarea.objects.filter(historia_id=id_historia)
+            proyecto=Proyecto.objects.get(id=sprint.proyecto_id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
-            tareas=Tarea.objects.filter(historia_id=id_historia)
+            proyecto=Proyecto.objects.get(id=sprint.proyecto_id)
           
     if usuario.is_authenticated():
-        return render_to_response('detallesprint.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
+        return render_to_response('detallesprint.html', {'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+@login_required(login_url='/ingresar')    
+def calendario(request, id_proyecto):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+            sprints=Sprint.objects.filter(proyecto=id_proyecto)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(id=id_proyecto)
+            sprints=Sprint.objects.filter(proyecto=id_proyecto)
+          
+    if usuario.is_authenticated():
+        return render_to_response('calendario.html', {'personal':personal, 'proyecto':proyecto, 'sprints':sprints}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+

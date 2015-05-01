@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block titulo %}ScrumCO{% endblock %}
+
+{% block style_css %}
+
+		<!-- fullCalendar -->
+        <link href="{{STATIC_URL}}css/fullcalendar/fullcalendar.css" rel="stylesheet" type="text/css" />
+        <link href="{{STATIC_URL}}css/fullcalendar/fullcalendar.print.css" rel="stylesheet" type="text/css" media='print' />
+
+{% endblock %}
+
+{% block script %}
+
+        <!-- fullCalendar -->
+        <script src="{{STATIC_URL}}/js/plugins/fullcalendar/fullcalendar.min.js" type="text/javascript"></script>
+        <!-- Page specific script -->
+        <script type="text/javascript">
+            $(function() {
+
+                /* initialize the calendar
+                 -----------------------------------------------------------------*/
+                //Date for the calendar events (dummy data)
+                var date = new Date('{{proyecto.fechaInicio|date:"c"}}');
+                var d = date.getDate(),
+                        m = date.getMonth(),
+                        y = date.getFullYear();
+                $('#calendar').fullCalendar({
+                	firstDay: 1,
+					weekends: true,
+					monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio','Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+					monthNameShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun','Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+					dayNames: ['Domingo', 'Lunes', 'Martes', 'Miercoles','Jueves', 'Viernes', 'Sabado'],
+					dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+					allDaySlot: false,
+					allDayText: 'Todo el dia',
+					axisFormat: 'H:mm',
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month'
+                    },
+                    buttonText: {//This is to add icons to the visible buttons
+                        prev: "<span class='fa fa-caret-left'></span>",
+                        next: "<span class='fa fa-caret-right'></span>",
+                        today: 'hoy',
+                        month: 'mes',
+                        week: 'semana',
+                        day: 'dia'
+                    },
+                    //Random default events
+                    events: [
+                        {% if sprints %}
+                        	{% for sprint in sprints %}
+		                        {
+		                            title: '{{sprint.nombre|capfirst}}',
+		                            start: '{{sprint.fechaInicio|date:"c"}}',
+		                            end: '{{sprint.fechaFin|date:"c"}}',
+		                            backgroundColor: "#00a65a", //Success (green)
+		                            borderColor: "#00a65a" //Success (green)
+		                        },
+		                        {
+		                            title: 'Revisión de {{sprint.nombre|capfirst}}',
+		                            start: '{{sprint.fechaRevision|date:"c"}}',
+		                            end: '{{sprint.fechaRevision|date:"c"}}',
+		                            backgroundColor: "#f56954", //red 
+		                            borderColor: "#f56954" //red
+		                        },
+                        	{% endfor %}
+                        {% endif %}
+                        {% if proyecto %}
+                        {
+                            title: 'Comienza: {{proyecto.nombreProyecto|capfirst}}',
+                            start: '{{proyecto.fechaInicio|date:"c"}}',
+                            end: '{{proyecto.fechaInicio|date:"c"}}',
+                            backgroundColor: "#f39c12", //yellow
+                            borderColor: "#f39c12" //yellow
+                        }      					  
+						{% endif %}
+                        
+                    ],
+                    editable: false,
+                    droppable: false, // this allows things to be dropped onto the calendar !!!
+                });
+                $('#calendar').fullCalendar('gotoDate', date);
+            });
+        </script>
+		
+
+{% endblock %}
+
+{% block notimensajes %}
+						<!-- Messages: style can be found in dropdown.less-->
+                        <li class="dropdown messages-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-envelope"></i>
+                                <span class="label label-success">4</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 4 messages</li>
+                                <li>
+                                    <!-- inner menu: contains the actual data -->
+                                    <ul class="menu">
+                                        <li><!-- start message -->
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image"/>
+                                                </div>
+                                                <h4>
+                                                    Support Team
+                                                    <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                                                </h4>
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li><!-- end message -->
+                                        <li>
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="{{STATIC_URL}}img/avatar2.png" class="img-circle" alt="user image"/>
+                                                </div>
+                                                <h4>
+                                                    AdminLTE Design Team
+                                                    <small><i class="fa fa-clock-o"></i> 2 hours</small>
+                                                </h4>
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="{{STATIC_URL}}img/avatar.png" class="img-circle" alt="user image"/>
+                                                </div>
+                                                <h4>
+                                                    Developers
+                                                    <small><i class="fa fa-clock-o"></i> Today</small>
+                                                </h4>
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="{{STATIC_URL}}img/avatar2.png" class="img-circle" alt="user image"/>
+                                                </div>
+                                                <h4>
+                                                    Sales Department
+                                                    <small><i class="fa fa-clock-o"></i> Yesterday</small>
+                                                </h4>
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <img src="{{STATIC_URL}}img/avatar.png" class="img-circle" alt="user image"/>
+                                                </div>
+                                                <h4>
+                                                    Reviewers
+                                                    <small><i class="fa fa-clock-o"></i> 2 days</small>
+                                                </h4>
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">See All Messages</a></li>
+                            </ul>
+                        </li>
+{% endblock %}
+                        
+{% block notificaciones %}
+						<!-- Notifications: style can be found in dropdown.less -->
+                        <li class="dropdown notifications-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-warning"></i>
+                                <span class="label label-warning">10</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 10 notifications</li>
+                                <li>
+                                    <!-- inner menu: contains the actual data -->
+                                    <ul class="menu">
+                                        <li>
+                                            <a href="#">
+                                                <i class="ion ion-ios7-people info"></i> 5 new members joined today
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-warning danger"></i> Very long description here that may not fit into the page and may cause design problems
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-users warning"></i> 5 new members joined
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a href="#">
+                                                <i class="ion ion-ios7-cart success"></i> 25 sales made
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <i class="ion ion-ios7-person danger"></i> You changed your username
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">View all</a></li>
+                            </ul>
+                        </li>
+{% endblock %}
+                        
+{% block notitareas %}
+						<!-- Tasks: style can be found in dropdown.less -->
+                        <li class="dropdown tasks-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-tasks"></i>
+                                <span class="label label-danger">9</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 9 tasks</li>
+                                <li>
+                                    <!-- inner menu: contains the actual data -->
+                                    <ul class="menu">
+                                        <li><!-- Task item -->
+                                            <a href="#">
+                                                <h3>
+                                                    Design some buttons
+                                                    <small class="pull-right">20%</small>
+                                                </h3>
+                                                <div class="progress xs">
+                                                    <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="sr-only">20% Complete</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li><!-- end task item -->
+                                        <li><!-- Task item -->
+                                            <a href="#">
+                                                <h3>
+                                                    Create a nice theme
+                                                    <small class="pull-right">40%</small>
+                                                </h3>
+                                                <div class="progress xs">
+                                                    <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="sr-only">40% Complete</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li><!-- end task item -->
+                                        <li><!-- Task item -->
+                                            <a href="#">
+                                                <h3>
+                                                    Some task I need to do
+                                                    <small class="pull-right">60%</small>
+                                                </h3>
+                                                <div class="progress xs">
+                                                    <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="sr-only">60% Complete</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li><!-- end task item -->
+                                        <li><!-- Task item -->
+                                            <a href="#">
+                                                <h3>
+                                                    Make beautiful transitions
+                                                    <small class="pull-right">80%</small>
+                                                </h3>
+                                                <div class="progress xs">
+                                                    <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="sr-only">80% Complete</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li><!-- end task item -->
+                                    </ul>
+                                </li>
+                                <li class="footer">
+                                    <a href="#">View all tasks</a>
+                                </li>
+                            </ul>
+                        </li>
+{% endblock %}
+                       
+{% block infousuario %}
+						<!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-user"></i>
+                                <span>{{personal.usuario.username|capfirst}} <i class="caret"></i></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header bg-light-blue">
+                                    <img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />
+                                    <p>
+                                        {{personal.usuario.username|capfirst}} - Web Developer
+                                        <small>Member since Nov. 2012</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Body -->
+                                <li class="user-body">
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Followers</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Sales</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Friends</a>
+                                    </div>
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="#" class="btn btn-default btn-flat">Perfil</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="/cerrar" class="btn btn-default btn-flat">Salir</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+{% endblock %}
+            
+{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />{% endblock %}
+
+{% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
+
+{% block sidebarlateral %}
+						<li>
+                            <a href="/">
+                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_historias' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Product backlog</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Sprints</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Planning poker</span>
+                            </a>
+                        </li>
+                 
+{% endblock %}
+
+{% block headersuperior %}
+				<section class="content-header">
+                    <h1>
+                        Calendario de {{proyecto.nombreProyecto|capfirst}}
+                    </h1>
+                    <ol class="breadcrumb">
+                    	{% if personal.usuario.is_superuser %}
+                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Editar proyecto</a></li>
+                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Cerrar proyecto</a></li>
+                        {% endif %} 
+                    </ol>
+                </section>
+{% endblock %}
+
+{% block contenido %}
+
+				<div class="row">
+                        <div class="col-md-9 col-md-offset-1">
+                            <div class="box box-primary">                                
+                                <div class="box-body no-padding">
+                                    <!-- THE CALENDAR -->
+                                    <div id="calendar"></div>
+                                </div><!-- /.box-body -->
+                            </div><!-- /. box -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->  
+
+
+{% endblock %}                        
