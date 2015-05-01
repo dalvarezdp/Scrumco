@@ -255,23 +255,28 @@
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.lista_historias' proyecto.id %}'>
-                                <i class="fa fa-th"></i> <span>Product backlog</span>
+                            <a href='{% url 'principal.views.lista_sprintbacklog' sprint.id %}'>
+                                <i class="fa fa-th"></i> <span>Sprint Backlog</span>
                             </a>
                         </li>
                         <li>
                             <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
-                                <i class="fa fa-th"></i> <span>Sprints</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
-                                <i class="fa fa-th"></i> <span>Calendario</span>
+                                <i class="fa fa-th"></i> <span>Muro</span>
                             </a>
                         </li>
                         <li>
                             <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Planning poker</span>
+                                <i class="fa fa-th"></i> <span>Reuniones</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Gráficas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Calendario</span>
                             </a>
                         </li>
                  
@@ -284,8 +289,8 @@
                     </h1>
                     <ol class="breadcrumb">
                     	{% if personal.usuario.is_superuser %}
-                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Editar proyecto</a></li>
-                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Cerrar proyecto</a></li>
+                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Editar sprint</a></li>
+                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Cerrar sprint</a></li>
                         {% endif %} 
                     </ol>
                 </section>

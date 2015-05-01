@@ -339,6 +339,7 @@ def nueva_tarea(request, id_proyecto, id_historia):
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
             proyecto=Proyecto.objects.get(pk=id_proyecto)
+    
     if request.method == 'POST':
         formulario=TareaForm(request.POST)
         if formulario.is_valid():
@@ -347,22 +348,15 @@ def nueva_tarea(request, id_proyecto, id_historia):
           
             if not resumen:
                 return HttpResponseRedirect('/rellenarcampos')
-            else:
-                try:              
-                    existe = Tarea.objects.get(resumen=resumen)
-                    return HttpResponseRedirect('/tareaexiste')
-                except:
-                    #try:                        
-                        p=formulario.save(commit=False)
-                        p.estado = 0
-                        p.historia = historia
-                        p.proyecto = proyecto
-                        p.creador = usuario
-                        p.save()
-                    #except:
-                        #return HttpResponseRedirect('/passdiferentes')                     
+            else:                     
+                p=formulario.save(commit=False)
+                p.estado = 0
+                p.historia = historia
+                p.proyecto = proyecto
+                p.creador = usuario
+                p.save()                    
             
-            return HttpResponseRedirect(reverse('detalle_historia',args=[id_proyecto]))            
+            return HttpResponseRedirect(reverse('detalle_historia',args=[id_historia]))            
         else:
             return HttpResponseRedirect('/formularioNoValido')
     else:
@@ -478,7 +472,7 @@ def detalle_sprint(request, id_sprint):
             proyecto=Proyecto.objects.get(id=sprint.proyecto_id)
           
     if usuario.is_authenticated():
-        return render_to_response('detallesprint.html', {'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+        return render_to_response('detallesprint.html', {'personal':personal, 'proyecto':proyecto, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -501,5 +495,57 @@ def calendario(request, id_proyecto):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
-    
 
+@login_required(login_url='/ingresar')    
+def lista_sprintbacklog(request, id_sprint):
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            
+    formulario = TareaForm()
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprintbacklog.html', {'formulario':formulario, 'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
+@login_required(login_url='/ingresar')    
+def nueva_tarea_modal(request, id_proyecto, id_historia):
+    print id_historia
+    usuario=request.user
+    historia=Historia.objects.get(pk=id_historia)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=id_proyecto)
+    
+    if request.method == 'POST':
+        formulario=TareaForm(request.POST)
+        if formulario.is_valid():
+            resumen = request.POST['resumen']           
+            descripcion = request.POST['descripcion']
+          
+            if not resumen:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:                     
+                p=formulario.save(commit=False)
+                p.estado = 0
+                p.historia = historia
+                p.proyecto = proyecto
+                p.creador = usuario
+                p.save()                    
+            
+            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = TareaForm()
+    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))

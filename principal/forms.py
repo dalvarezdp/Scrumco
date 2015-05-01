@@ -28,5 +28,5 @@ class TareaForm(ModelForm):
 class SprintForm(ModelForm):
     class Meta:
         model = Sprint
-        exclude = ['proyecto', 'estado', 'nTareas','hEstimadas','hPendientes']
+        exclude = ['proyecto', 'estado', 'nTareas','hEstimadas','hPendientes','fechaFin']
 

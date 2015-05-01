@@ -40,6 +40,7 @@ class Sprint(models.Model):
     Objetivo = models.TextField()
     fechaInicio = models.DateField(db_index=False, auto_now_add=False)
     duracion = models.IntegerField(blank="true", null="true")
+    fechaFin = models.DateField(db_index=False, auto_now_add=False)
     fechaRevision = models.DateField(db_index=False, auto_now_add=False)
     finSemana = models.BooleanField(default=False)
     estado = models.IntegerField(blank="true", null="true")
@@ -78,7 +79,7 @@ class Historia(models.Model):
 
 
 class Tarea(models.Model):
-    resumen = models.CharField(max_length=100, unique=True)
+    resumen = models.CharField(max_length=100, unique=False)
     descripcion = models.TextField()
     esfuerzo = models.IntegerField(blank="true", null="true")
     estado = models.IntegerField(blank="true", null="true")
