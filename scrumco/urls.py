@@ -1,5 +1,11 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
+from principal.viewsets import TareaViewSet
+from rest_framework.routers import DefaultRouter
+
+
+router = DefaultRouter()
+router.register(r'tareas', TareaViewSet)
 
 from django.contrib import admin
 admin.autodiscover()
@@ -8,6 +14,10 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'scrumco.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    #url(r'^api/tienda/SFID/(?P<SFID>\d+)$','principal.views.tienda_sfid', name='tienda_sfid'),
+    
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'principal.views.inicio'),
@@ -30,5 +40,7 @@ urlpatterns = patterns('',
     url(r'^sprint/(?P<id_sprint>\d+)$','principal.views.detalle_sprint', name='detalle_sprint'),
     url(r'^sprint/backlog/(?P<id_sprint>\d+)$','principal.views.lista_sprintbacklog', name='lista_sprintbacklog'),
     url(r'^sprint/nuevo/(?P<id_proyecto>\d+)$', 'principal.views.nuevo_sprint', name='nuevo_sprint'),
+    url(r'^sprint/(?P<id_sprint>\d+)/muro/$','principal.views.ver_muro', name='ver_muro'),
     url(r'^calendario/(?P<id_proyecto>\d+)$','principal.views.calendario', name='calendario'),
+    url(r'^sprint/calendario/(?P<id_proyecto>\d+)$','principal.views.calendario_sprint', name='calendario_sprint'),
 )

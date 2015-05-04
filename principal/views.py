@@ -12,6 +12,7 @@ import re
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm
+
 # Create your views here.
 
 def inicio(request):
@@ -495,6 +496,7 @@ def calendario(request, id_proyecto):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
+    
 
 @login_required(login_url='/ingresar')    
 def lista_sprintbacklog(request, id_sprint):
@@ -549,3 +551,27 @@ def nueva_tarea_modal(request, id_proyecto, id_historia):
     else:
         formulario = TareaForm()
     return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def ver_muro(request, id_sprint):
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+          
+    if usuario.is_authenticated():
+        return render_to_response('muro.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+    
+

@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'principal',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -131,3 +132,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(RUTA_PROYECTO,'plantillas'),
 )
+
+REST_FRAMEWORK = {
+'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
+}

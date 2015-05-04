@@ -257,13 +257,13 @@
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
-                        <li  class="active">
+                        <li>
                             <a href='{% url 'principal.views.lista_sprintbacklog' sprint.id %}'>
                                 <i class="fa fa-th"></i> <span>Sprint Backlog</span>
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.ver_muro' sprint.id %}'>
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
                                 <i class="fa fa-th"></i> <span>Muro</span>
                             </a>
                         </li>
@@ -272,9 +272,14 @@
                                 <i class="fa fa-th"></i> <span>Reuniones</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href="/proyectos">
                                 <i class="fa fa-th"></i> <span>Gráficas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/proyectos">
+                                <i class="fa fa-th"></i> <span>Calendario</span>
                             </a>
                         </li>
                  

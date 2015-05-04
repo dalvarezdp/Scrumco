@@ -33,7 +33,7 @@ class Proyecto(models.Model):
     spProyecto = models.IntegerField(blank="true", null="true")
     jefeProyecto = models.ForeignKey(Personal)
     def __unicode__(self):
-        return str(self.jefeProyecto)
+        return str(self.nombreProyecto)
     
 class Sprint(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
@@ -75,7 +75,7 @@ class Historia(models.Model):
     creador = models.ForeignKey(User)
     sprint = models.ForeignKey(Sprint, blank="true", null="true")
     def __unicode__(self):
-        return str(self.proyecto)
+        return str(self.titulo)
 
 
 class Tarea(models.Model):

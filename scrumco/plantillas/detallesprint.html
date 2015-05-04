@@ -260,7 +260,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                            <a href='{% url 'principal.views.ver_muro' sprint.id %}'>
                                 <i class="fa fa-th"></i> <span>Muro</span>
                             </a>
                         </li>
@@ -274,12 +274,7 @@
                                 <i class="fa fa-th"></i> <span>Gráficas</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="/proyectos">
-                                <i class="fa fa-th"></i> <span>Calendario</span>
-                            </a>
-                        </li>
-                 
+
 {% endblock %}
 
 {% block headersuperior %}
