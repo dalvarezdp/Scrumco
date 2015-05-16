@@ -29,4 +29,8 @@ class SprintForm(ModelForm):
     class Meta:
         model = Sprint
         exclude = ['proyecto', 'estado', 'nTareas','hEstimadas','hPendientes','fechaFin']
+        
+class SelectSprintForm(forms.Form):
+    class Meta:
+        sprint = forms.ModelChoiceField(queryset=None,required=False)
 

@@ -354,7 +354,13 @@
 		                                <td>{{dato.id}}</td>
 		                                <td>{{dato.resumen|capfirst}}</td>
 		                                <td>{{dato.descripcion|capfirst}}</td>
-		                                <td><span class="label label-warning">Pendiente</span></td>                                
+		                                {% if dato.estado = 0 %}
+		                                	<td><span class="label label-warning">Pendiente</span></td>
+		                                {% elif dato.estado = 1 %}
+		                                	<td><span class="label label-primary">Trabajando</span></td>  
+		                                {% else %}
+		                                	<td><span class="label label-success">Hecho</span></td> 
+		                                {% endif %}                             
 		                              </tr>						  
 		                        {% endif %}
 							{% endfor %}

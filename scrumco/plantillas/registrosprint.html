@@ -3,10 +3,11 @@
 {% block titulo %}ScrumCO{% endblock %}
 
 {% block style_css %}
+		<link href="{{STATIC_URL}}css/ionslider/normalize.css" rel="stylesheet" type="text/css"/>
 		<!-- Ion Slider -->
         <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.css" rel="stylesheet" type="text/css" />
         <!-- ion slider Nice -->
-        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinNice.css" rel="stylesheet" type="text/css" />
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinFlat.css" rel="stylesheet" type="text/css" />
         <!-- bootstrap slider -->
         <link href="{{STATIC_URL}}css/bootstrap-slider/slider.css" rel="stylesheet" type="text/css" />
 
@@ -332,8 +333,8 @@
                     <form action="" method="post">{% csrf_token %}
 	                    <div class="row">
 	                    	<div class="col-xs-12">
-	                            <div class="box">
 	                            {% if historias %}
+	                            <div class="box">	                            
 	                                <div class="box-header">
 	                                    <h3 class="box-title">Historias del proyecto</h3>
 	                                    
@@ -348,19 +349,19 @@
 				                                <th>Estado</th>
 				                            </tr>
 	                                        {% for dato in historias %}
-				                              <tr>
-				                              	<td><input type="checkbox" name="historiasSprint" value="{{dato.id}}"><br></td>
-				                                <td>{{dato.id}}</td>
-				                                <td>{{dato.titulo|capfirst}}</td>
-				                                <td>{{dato.descripcion|capfirst}}</td>
-				                                <td><span class="label label-warning">Pendiente</span></td>                                
-				                              </tr>						  
+					                              <tr>
+					                              	<td><input type="checkbox" name="historiasSprint" value="{{dato.id}}"><br></td>
+					                                <td>{{dato.id}}</td>
+					                                <td>{{dato.titulo|capfirst}}</td>
+					                                <td>{{dato.descripcion|capfirst}}</td>
+					                                <td><span class="label label-warning">Pendiente</span></td>                                
+					                              </tr>					  
 											{% endfor %}
 					      
 	                                    </table>
 	                                </div><!-- /.box-body -->
 	                            {% else %}
-									<div class="alert alert-warning" role="alert">Aún no hay ninguna historia en el proyecto.</div>							  
+									<div class="alert alert-warning" role="alert">No hay ninguna historia disponible que no esté asignada a otro sprint.</div>							  
 					
 								{% endif %}
 	                            </div><!-- /.box -->
@@ -421,10 +422,16 @@
 			                                    </div>	
 											  </div>
 											</div>
-	                                    </div><!-- /.box-body -->	
+	                                    </div><!-- /.box-body -->
+	                                    {% if historias %}	
 	                                    <div class="box-footer">
 	                                        <button type="submit" class="btn btn-primary">Añadir proyecto</button>
-	                                    </div>	           
+	                                    </div>
+	                                    {% else %}
+										<div class="box-footer">
+	                                        <button type="submit" class="btn btn-primary" disabled="disabled">Añadir proyecto</button>
+	                                    </div>
+										{% endif %}           
 	                            </div><!-- /.box -->
 	                        </div><!--/.col (left) -->
 	                        <!-- right column -->

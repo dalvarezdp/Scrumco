@@ -3,10 +3,11 @@
 {% block titulo %}ScrumCO{% endblock %}
 
 {% block style_css %}
+		<link href="{{STATIC_URL}}css/ionslider/normalize.css" rel="stylesheet" type="text/css"/>
 		<!-- Ion Slider -->
         <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.css" rel="stylesheet" type="text/css" />
         <!-- ion slider Nice -->
-        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinNice.css" rel="stylesheet" type="text/css" />
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinFlat.css" rel="stylesheet" type="text/css" />
         <!-- bootstrap slider -->
         <link href="{{STATIC_URL}}css/bootstrap-slider/slider.css" rel="stylesheet" type="text/css" />
 
@@ -36,14 +37,11 @@
                     hasGrid: true
                 });
                 $("#sp").ionRangeSlider({
-                	min: 0,
-                    max: 100,
+				    type: "single",
+				    grid: true,
 				    from: 0,
-                    type: 'single',
-                    step: 1,
-                    postfix: " SP",
-                    prettify: false,
-                    hasGrid: true
+				    to: 100,
+				    values: [0, 1, 2, 3, 5, 8, 13, 20, 40, 100]
 				});
             });
         </script>
@@ -360,7 +358,7 @@
 						                    
 	                                    </div><!-- /.box-body -->	
 	                                    <div class="box-footer">
-	                                        <button type="submit" class="btn btn-primary">Añadir proyecto</button>
+	                                        <button type="submit" class="btn btn-primary">Añadir historia</button>
 	                                    </div>	           
 	                            </div><!-- /.box -->
 	                        </div><!--/.col (left) -->
@@ -392,7 +390,7 @@
 			{% comment %}
 			<form action="" method="post">{% csrf_token %}
 				{{formulario.as_p}}
-				<button type="submit" class="btn btn-primary">Añadir proyecto</button>
+				<button type="submit" class="btn btn-primary">Añadir historia</button>
 			</form>
 			{% endcomment %}
 {% endblock %}                        

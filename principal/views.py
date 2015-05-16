@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro, Proyecto, Equipo, Historia, Tarea, Sprint
+from principal.models import Personal, Miembro, Proyecto, Equipo, Historia, Tarea, Sprint, Poker
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 import re
 from datetime import datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
-from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm
+from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm, SelectSprintForm
 
 # Create your views here.
 
@@ -392,7 +392,7 @@ def nuevo_sprint(request, id_proyecto):
             proyecto=Proyecto.objects.get(id=id_proyecto)
             personal=Personal.objects.get(usuario=usuario.id)
             equipo = Equipo.objects.filter(proyecto_id=id_proyecto).order_by('id')
-            historias=Historia.objects.filter(proyecto_id=id_proyecto)
+            historias=Historia.objects.filter(proyecto_id=id_proyecto).filter(sprint_id=None)
 
     if request.method == 'POST':
         formulario=SprintForm(request.POST)
@@ -571,7 +571,134 @@ def ver_muro(request, id_sprint):
         return render_to_response('muro.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def sprints_poker(request, id_proyecto):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    if request.method == 'POST':
+        formulario=SelectSprintForm(request.POST)
+        if formulario.is_valid():
+            id_sprint = request.POST['sprint']
+            sprint = Sprint.objects.get(id=id_sprint)           
+            historias = Historia.objects.filter(sprint = id_sprint)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            
+                       
+            
+            return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,sprint.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SelectSprintForm()
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprintpoker.html', {'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))    
+
+
+@login_required(login_url='/ingresar')    
+def planning_poker(request,id_proyecto, id_sprint):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        
+        sprint = Sprint.objects.get(id=id_sprint)                     
+        historias = Historia.objects.filter(sprint = id_sprint)
+        tareas=Tarea.objects.filter(historia__in=historias)
+        
+        historiasVotadas=Poker.objects.filter(jugador_id=personaEquipo.id)
+        
+        if request.method == 'POST':
+            formulario=SelectSprintForm(request.POST)
+            if formulario.is_valid():
+                id_sprint = request.POST['sprint']
+                sprint = Sprint.objects.get(id=id_sprint)           
+                historias = Historia.objects.filter(sprint = id_sprint)
+                tareas=Tarea.objects.filter(historia__in=historias)
+                
+                           
+                
+                return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,sprint.id]))
+            else:
+                return HttpResponseRedirect('/formularioNoValido')
+        else:
+            formulario = SelectSprintForm()
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('poker.html', {'historiasVotadas':historiasVotadas,'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'valueSprint':sprint, 'historias':historias, 'tareas':tareas, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))    
     
     
+    
+@login_required(login_url='/ingresar')    
+def votar_poker(request, id_proyecto, id_sprint, id_historia, voto):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    sprint=Sprint.objects.get(id=id_sprint)
+    historia=Historia.objects.get(id=id_historia)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+            
+        try:              
+            existe = Poker.objects.get(jugador=personaEquipo,proyecto_id=id_proyecto,sprint_id=id_sprint,historia_id=id_historia)
+            existe.delete()
+            
+            v = Poker.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                historia = historia,
+                votado = 1,
+                spVotado = voto,
+                jugador = personaEquipo,
+            )
+            v.save() 
+        except:                     
+            v = Poker.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                historia = historia,
+                votado = 1,
+                spVotado = voto,
+                jugador = personaEquipo,
+            )
+            v.save()  
+    
+          
+    if usuario.is_authenticated():
+         return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,id_sprint])) 
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request)) 
     
 

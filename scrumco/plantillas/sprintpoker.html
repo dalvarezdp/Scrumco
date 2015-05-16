@@ -249,13 +249,13 @@
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
 {% block sidebarlateral %}
-						<li class="active">
+						<li>
                             <a href="/">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.lista_historias' proyecto.id %}'>
+                            <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
                                 <i class="fa fa-th"></i> <span>Product backlog</span>
                             </a>
                         </li>
@@ -269,7 +269,7 @@
                                 <i class="fa fa-th"></i> <span>Calendario</span>
                             </a>
                         </li>
-                        <li>
+                        <li class="active">
                             <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
                                 <i class="fa fa-th"></i> <span>Planning poker</span>
                             </a>
@@ -280,20 +280,132 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        {{proyecto.nombreProyecto|capfirst}}
+                        Planning Poker
                     </h1>
                     <ol class="breadcrumb">
-                    	{% if personal.usuario.is_superuser %}
-                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Editar proyecto</a></li>
-                        	<li><a href="/miembro/nuevo/"><i class="fa fa-plus"></i> Cerrar proyecto</a></li>
+                    	{% if personal.usuario.is_superuser or personaEquipo.scrummaster == 1%}
+                        	aaaaaaa
                         {% endif %} 
                     </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
+				{% if sprints %}	
+		            	<div class="row">
+							<div class="col-md-5">
+								<form class="form-inline" action="" method="post">{% csrf_token %}
+									<div class="form-group">
+									    <label for="disabledTextInput">Selecciona un Sprint:</label>
+									    <select class="form-control" name="sprint" id="sprint">
+									    	{% for dato in sprints %}
+									    		<option {% if valueSprint == dato %} selected="selected" {% endif %} value="{{dato.id}}">{{dato.nombre|capfirst}}</option>		
+									    	{% endfor %}		  
+										</select>								
+									</div>
+									<button type="submit" class="btn btn-primary">Seleccionar</button>
+								</form>
+							</div>
+						</div>
+						<br />
+				{% else %}
+						<div class="alert alert-warning" role="alert">Aún no hay ningún Sprint.</div>							  
+				{% endif %}
 
-
+				{% if historias %}
+					<div class="box box-solid">
+                        <div class="box-header">
+                            <h3 class="box-title">Historias</h3>
+                        </div><!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="box-group" id="accordion">
+                                <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                                {% for dato in historias %}
+                                <div class="panel box box-primary">
+                                    <div class="box-header">
+                                        <h4 class="box-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{dato.id}}">
+                                                {{dato.titulo}}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse{{dato.id}}" class="panel-collapse collapse">
+                                        <div class="box-body">
+                                        	
+                                        	{% if tareas %}
+						
+											    <div class="panel panel-default">
+												  <!-- Default panel contents -->
+												  <div class="box-body table-responsive no-padding">
+						                          	<table class="table table-hover">
+						                              <tr>
+						                              	<th>ID</th>
+						                                <th>Resumen</th>
+						                                <th>Descripción</th>
+						                                <th>Estado</th>
+						                              </tr>
+								                    {% for dato2 in tareas %}
+								                    	{% if dato.id = dato2.historia_id %}
+								                              <tr>
+								                                <td>{{dato2.id}}</td>
+								                                <td>{{dato2.resumen|capfirst}}</td>
+								                                <td>{{dato2.descripcion|capfirst}}</td>
+								                                {% if dato2.estado = 0 %}
+								                                	<td><span class="label label-warning">Pendiente</span></td>
+								                                {% elif dato2.estado = 1 %}
+								                                	<td><span class="label label-primary">Trabajando</span></td>  
+								                                {% else %}
+								                                	<td><span class="label label-success">Hecho</span></td> 
+								                                {% endif %}                              
+								                              </tr>						  
+								                        {% endif %}
+													{% endfor %}
+						                            </table>
+						                          </div><!-- /.box-body -->
+												</div>						
+											
+										{% else %}
+												<div class="alert alert-warning" role="alert">Aún no hay ninguna tarea para esta historia.</div>							  
+						
+										{% endif %}
+                                        	
+                                        	
+                                            <div class="row" style="margin-left: 1%; margin-bottom: 1%;">
+											  <div class="col-md-7">
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 0%}"><img src="{{STATIC_URL}}img/0.png" alt="..." ></a>
+							                        <a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 05%}"><img src="{{STATIC_URL}}img/05.png" alt="..." ></a>
+							                        <a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 1%}"><img src="{{STATIC_URL}}img/1.png" alt="..." ></a>
+							                        <a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 2%}"><img src="{{STATIC_URL}}img/2.png" alt="..." ></a>
+							                        <a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 3%}"><img src="{{STATIC_URL}}img/3.png" alt="..." ></a>
+							                        <a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 5%}"><img src="{{STATIC_URL}}img/5.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 8%}"><img src="{{STATIC_URL}}img/8.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 13%}"><img src="{{STATIC_URL}}img/13.png" alt="..."></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 20%}"><img src="{{STATIC_URL}}img/20.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 40%}"><img src="{{STATIC_URL}}img/40.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 100%}"><img src="{{STATIC_URL}}img/100.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 101%}"><img src="{{STATIC_URL}}img/interrogacion.png" alt="..." ></a>
+											  		<a href="{% url 'principal.views.votar_poker' proyecto.id valueSprint.id dato.id 102%}"><img src="{{STATIC_URL}}img/infinito.png" alt="..." ></a>
+											  </div>
+											  
+											  <div class="col-md-3 col-md-offset-2" style="margin-top: 4%;">
+											  		<a href="#"><img style="margin-left: 35%; margin-bottom: 1%;" src="{{STATIC_URL}}img/20.png" alt="..." ></a>
+											  		<div id="msg" class="alert alert-success alert-dismissable">
+													    <i class="fa fa-check"></i>
+													    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+													    <b>Hecho!</b> Estimación realizada correctamente.
+													</div>
+											  </div>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div><!-- /.box -->
+				{% endif %}
+				
+				
 
 
 {% endblock %}                        

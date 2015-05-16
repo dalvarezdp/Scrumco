@@ -89,5 +89,16 @@ class Tarea(models.Model):
     creador = models.ForeignKey(User)
     def __unicode__(self):
         return str(self.historia)
+
+
+class Poker(models.Model):
+    proyecto = models.ForeignKey(Proyecto)
+    sprint = models.ForeignKey(Sprint, blank="true", null="true")
+    historia = models.ForeignKey(Historia)
+    votado = models.BooleanField(default=False)
+    spVotado = models.IntegerField(blank="true", null="true")
+    jugador = models.ForeignKey(Equipo)  
+    def __unicode__(self):
+        return str(self.spVotado)
     
 

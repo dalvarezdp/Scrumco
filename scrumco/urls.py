@@ -42,5 +42,7 @@ urlpatterns = patterns('',
     url(r'^sprint/nuevo/(?P<id_proyecto>\d+)$', 'principal.views.nuevo_sprint', name='nuevo_sprint'),
     url(r'^sprint/(?P<id_sprint>\d+)/muro/$','principal.views.ver_muro', name='ver_muro'),
     url(r'^calendario/(?P<id_proyecto>\d+)$','principal.views.calendario', name='calendario'),
-    url(r'^sprint/calendario/(?P<id_proyecto>\d+)$','principal.views.calendario_sprint', name='calendario_sprint'),
+    url(r'^poker/py/(?P<id_proyecto>\d+)$','principal.views.sprints_poker', name='sprints_poker'),
+    url(r'^poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)$','principal.views.planning_poker', name='planning_poker'),
+    url(r'^poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)/ht/(?P<id_historia>\d+)/v/(?P<voto>\d+)$','principal.views.votar_poker', name='votar_poker'),
 )
