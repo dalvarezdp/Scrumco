@@ -41,7 +41,6 @@
 	border: 1px solid #000;
 	cursor: move;
 	display: block;
-	font-weight: bold;
 	margin-bottom: 5px;
 	padding: 5px 0;
 	text-align: center;
@@ -449,8 +448,28 @@ $(document).ready(function(){
 			            	{% if historia.id = dato.historia_id %}
 				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-resumen="{{dato.resumen}}" tarea-descripcion="{{dato.descripcion}}" tarea-esfuerzo="{{dato.esfuerzo}}" tarea-estado="{{dato.estado}}" tarea-realizador="{{dato.realizador}}" tarea-historia="{{dato.historia}}" tarea-proyecto="{{dato.proyecto}}" tarea-creador="{{dato.creador}}">
 									<li class="sortable-item">
-										<p>id: {{dato.id}}</p>
-										<p>{{dato.resumen|capfirst}}</p>
+										<!-- todo text -->
+											<div class="navbar-right">
+												<div class="tools">
+	                                                <!-- Emphasis label -->
+	                                                {% if dato.realizador%}
+                                            			<small class="label label-primary">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small>
+                                            		{% else %}
+														<small class="label label-danger">Sin asignar</small>
+													{% endif %}
+	                                            </div>	
+                                            	
+                                            </div>
+                                            <div class="navbar-left">
+                                            	<small class="label label-success"><i class="fa fa-clock-o"></i> {{dato.esfuerzo}} H</small>
+                                            	<p style="margin: 0px;"><span class="text">id: {{dato.id}}</span></p> 
+                                            	
+                                            	
+                                            </div>
+                                                                                     
+                                            <p style="margin: 0px; font-weight: bold;"><span class="text">{{dato.resumen|capfirst}}</span></p>
+                                            <p style="margin-top: 10%;">{{dato.descripcion|capfirst}}</p>
+                                         	
 									</li>
 								</div>
 							{% endif %}
@@ -471,9 +490,29 @@ $(document).ready(function(){
 	            	{% if dato.estado = 1 %}			        
 			            	{% if historia.id = dato.historia_id %}
 				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="1">
+				            		                                       
 									<li class="sortable-item">
-										<p>id: {{dato.id}}</p>
-										<p>{{dato.resumen|capfirst}}</p>
+										<!-- todo text -->
+											<div class="navbar-right">
+												<div class="tools">
+	                                                <!-- Emphasis label -->
+	                                                {% if dato.realizador%}
+                                            			<small class="label label-primary">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small>
+                                            		{% else %}
+														<small class="label label-danger">Sin asignar</small>
+													{% endif %}
+	                                            </div>	
+                                            	
+                                            </div>
+                                            <div class="navbar-left">
+                                            	<small class="label label-success"><i class="fa fa-clock-o"></i> {{dato.esfuerzo}} H</small>
+                                            	<p style="margin: 0px;"><span class="text">id: {{dato.id}}</span></p> 
+                                            	
+                                            	
+                                            </div>
+                                                                                     
+                                            <p style="margin: 0px; font-weight: bold;"><span class="text">{{dato.resumen|capfirst}}</span></p>
+                                            <p style="margin-top: 10%;">{{dato.descripcion|capfirst}}</p>										
 									</li>
 								</div>
 							{% endif %}
@@ -495,8 +534,27 @@ $(document).ready(function(){
 			            	{% if historia.id = dato.historia_id %}
 				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="2">
 									<li class="sortable-item">
-										<p>id: {{dato.id}}</p>
-										<p>{{dato.resumen|capfirst}}</p>
+										<!-- todo text -->
+											<div class="navbar-right">
+												<div class="tools">
+	                                                <!-- Emphasis label -->
+	                                                {% if dato.realizador%}
+                                            			<small class="label label-primary">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small>
+                                            		{% else %}
+														<small class="label label-danger">Sin asignar</small>
+													{% endif %}
+	                                            </div>	
+                                            	
+                                            </div>
+                                            <div class="navbar-left">
+                                            	<small class="label label-success"><i class="fa fa-clock-o"></i> {{dato.esfuerzo}} H</small>
+                                            	<p style="margin: 0px;"><span class="text">id: {{dato.id}}</span></p> 
+                                            	
+                                            	
+                                            </div>
+                                                                                     
+                                            <p style="margin: 0px; font-weight: bold;"><span class="text">{{dato.resumen|capfirst}}</span></p>
+                                            <p style="margin-top: 10%;">{{dato.descripcion|capfirst}}</p>	
 									</li>
 								</div>
 							{% endif %}

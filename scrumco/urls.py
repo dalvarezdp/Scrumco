@@ -45,4 +45,7 @@ urlpatterns = patterns('',
     url(r'^poker/py/(?P<id_proyecto>\d+)$','principal.views.sprints_poker', name='sprints_poker'),
     url(r'^poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)$','principal.views.planning_poker', name='planning_poker'),
     url(r'^poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)/ht/(?P<id_historia>\d+)/v/(?P<voto>\d+)$','principal.views.votar_poker', name='votar_poker'),
+    url(r'^elegir/poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)/ht/(?P<id_historia>\d+)/v/(?P<voto>\d+)$','principal.views.elegir_estimacion', name='elegir_estimacion'),
+    url(r'^reiniciar/poker/py/(?P<id_proyecto>\d+)/sprint/(?P<id_sprint>\d+)/ht/(?P<id_historia>\d+)$','principal.views.reiniciar_estimacion', name='reiniciar_estimacion'),
+    url(r'^/sprint/(?P<id_sprint>\d+)/asignar/tarea/(?P<id_tarea>\d+)$', 'principal.views.asignar_tarea', name='asignar_tarea'),
 )

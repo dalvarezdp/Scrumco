@@ -315,7 +315,13 @@
 			                    	<label>Descripción</label>
 			                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción"></textarea>
 			                      </div>
-					            </div>			        
+					            </div>	
+					            <div class="row">
+						            <div class="form-group">
+	                            		<label>Esfuerzo estimado (Horas)</label>
+				                        <input type="text" name="esfuerzo" id="esfuerzo" class="form-control" placeholder="Esfuerzo"/>
+				                    </div>	
+			                    </div>	        
 					          </div>
 					        
 				        </div>
@@ -347,6 +353,8 @@
                                 <th>Resumen</th>
                                 <th>Descripción</th>
                                 <th>Estado</th>
+                                <th>Esfuerzo</th>
+                                <th>Realizador</th>
                               </tr>
 		                    {% for dato in tareas %}
 		                    	{% if historia.id = dato.historia_id %}
@@ -360,7 +368,13 @@
 		                                	<td><span class="label label-primary">Trabajando</span></td>  
 		                                {% else %}
 		                                	<td><span class="label label-success">Hecho</span></td> 
-		                                {% endif %}                             
+		                                {% endif %}  
+		                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
+		                                {% if dato.realizador%}
+                                			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
+                                		{% else %}
+											<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
+										{% endif %}                         
 		                              </tr>						  
 		                        {% endif %}
 							{% endfor %}

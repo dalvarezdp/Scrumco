@@ -265,7 +265,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
                                 <i class="fa fa-th"></i> <span>Calendario</span>
                             </a>
                         </li>
@@ -304,6 +304,8 @@
                                 <th>Resumen</th>
                                 <th>Descripción</th>
                                 <th>Estado</th>
+                                <th>Esfuerzo</th>
+                                <th>Realizador</th>
                               </tr>
                     {% for dato in tareas %}
                               <tr>
@@ -316,7 +318,13 @@
                                 	<td><span class="label label-primary">Trabajando</span></td>  
                                 {% else %}
                                 	<td><span class="label label-success">Hecho</span></td> 
-                                {% endif %}                                
+                                {% endif %} 
+                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
+                                {% if dato.realizador%}
+                        			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
+                        		{% else %}
+									<td><small class="label label-danger">Sin asignar</small></td>
+								{% endif %}                               
                               </tr>						  
 					{% endfor %}
                             </table>

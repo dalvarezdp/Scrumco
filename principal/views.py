@@ -346,14 +346,16 @@ def nueva_tarea(request, id_proyecto, id_historia):
         if formulario.is_valid():
             resumen = request.POST['resumen']           
             descripcion = request.POST['descripcion']
+            esfuerzo = request.POST['esfuerzo']
           
-            if not resumen:
+            if not resumen or not esfuerzo:
                 return HttpResponseRedirect('/rellenarcampos')
             else:                     
                 p=formulario.save(commit=False)
                 p.estado = 0
                 p.historia = historia
                 p.proyecto = proyecto
+                p.esfuerzo = esfuerzo
                 p.creador = usuario
                 p.save()                    
             
@@ -534,14 +536,16 @@ def nueva_tarea_modal(request, id_proyecto, id_historia):
         if formulario.is_valid():
             resumen = request.POST['resumen']           
             descripcion = request.POST['descripcion']
+            esfuerzo = request.POST['esfuerzo']
           
-            if not resumen:
+            if not resumen or not esfuerzo:
                 return HttpResponseRedirect('/rellenarcampos')
             else:                     
                 p=formulario.save(commit=False)
                 p.estado = 0
                 p.historia = historia
                 p.proyecto = proyecto
+                p.esfuerzo = esfuerzo
                 p.creador = usuario
                 p.save()                    
             
@@ -571,6 +575,33 @@ def ver_muro(request, id_sprint):
         return render_to_response('muro.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+@login_required(login_url='/ingresar')    
+def asignar_tarea(request, id_sprint, id_tarea):
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    tarea=Tarea.objects.get(id=id_tarea)
+    tarea.realizador = personaEquipo
+    tarea.save()
+          
+    if usuario.is_authenticated():
+        return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[id_sprint]))  
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
 
 
 @login_required(login_url='/ingresar')    
@@ -629,6 +660,7 @@ def planning_poker(request,id_proyecto, id_sprint):
         tareas=Tarea.objects.filter(historia__in=historias)
         
         historiasVotadas=Poker.objects.filter(jugador_id=personaEquipo.id)
+        resultadoPoker=Poker.objects.filter(sprint_id=id_sprint)
         
         if request.method == 'POST':
             formulario=SelectSprintForm(request.POST)
@@ -648,7 +680,7 @@ def planning_poker(request,id_proyecto, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('poker.html', {'historiasVotadas':historiasVotadas,'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'valueSprint':sprint, 'historias':historias, 'tareas':tareas, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
+        return render_to_response('poker.html', {'resultadoPoker':resultadoPoker,'historiasVotadas':historiasVotadas,'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'valueSprint':sprint, 'historias':historias, 'tareas':tareas, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))    
     
@@ -673,17 +705,9 @@ def votar_poker(request, id_proyecto, id_sprint, id_historia, voto):
             
         try:              
             existe = Poker.objects.get(jugador=personaEquipo,proyecto_id=id_proyecto,sprint_id=id_sprint,historia_id=id_historia)
-            existe.delete()
-            
-            v = Poker.objects.create(                       
-                proyecto = proyecto,
-                sprint = sprint,
-                historia = historia,
-                votado = 1,
-                spVotado = voto,
-                jugador = personaEquipo,
-            )
-            v.save() 
+            existe.votado = 1
+            existe.spVotado = voto
+            existe.save()
         except:                     
             v = Poker.objects.create(                       
                 proyecto = proyecto,
@@ -701,4 +725,63 @@ def votar_poker(request, id_proyecto, id_sprint, id_historia, voto):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request)) 
     
+
+@login_required(login_url='/ingresar')    
+def elegir_estimacion(request, id_proyecto, id_sprint, id_historia, voto):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    sprint=Sprint.objects.get(id=id_sprint)
+    historia=Historia.objects.get(id=id_historia)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+                       
+        historia.sp = voto
+        historia.save()
+ 
+    
+          
+    if usuario.is_authenticated():
+         return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,id_sprint])) 
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request)) 
+    
+    
+    
+@login_required(login_url='/ingresar')    
+def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
+    print "Hola"
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    sprint=Sprint.objects.get(id=id_sprint)
+    historia=Historia.objects.get(id=id_historia)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+                       
+            
+        existe = Poker.objects.filter(historia=historia)
+        existe.delete()                  
+            
+ 
+    
+          
+    if usuario.is_authenticated():
+         return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,id_sprint])) 
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request)) 
 
