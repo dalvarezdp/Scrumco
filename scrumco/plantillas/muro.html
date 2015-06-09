@@ -94,6 +94,7 @@ $(document).ready(function(){
 		$('#muro .sortable-list{{historia.id}}').sortable({
 			connectWith: '#muro .sortable-list{{historia.id}}',
 			placeholder: 'placeholder',
+			cancel: ".ui-state-disabled",
 			axis: 'x',
 			start: function(event, ui) {
 	            item = ui.item;
@@ -104,7 +105,7 @@ $(document).ready(function(){
 	            var data = $(this).sortable('serialize');
 	            var csrftoken = getCookie('csrftoken');
 		        var id = ui.item.attr('tarea-id');		
-		        var miTarea	= {"id":id,"resumen":ui.item.attr('tarea-resumen'),"descripcion":ui.item.attr('tarea-descripcion'),"esfuerzo":ui.item.attr('tarea-esfuerzo'),"estado":newList.attr('id'),"realizador":ui.item.attr('tarea-realizador'),"historia":ui.item.attr('tarea-historia'),"proyecto":ui.item.attr('tarea-proyecto'),"creador":ui.item.attr('tarea-creador')};	
+		        var miTarea	= {"id":id,"resumen":ui.item.attr('tarea-resumen'),"descripcion":ui.item.attr('tarea-descripcion'),"esfuerzo":ui.item.attr('tarea-esfuerzo'),"estado":newList.attr('id'),"realizador":ui.item.attr('tarea-realizador'),"historia":ui.item.attr('tarea-historia'),"proyecto":ui.item.attr('tarea-proyecto'),"creador":ui.item.attr('tarea-creador'),"fechaEstado":ui.item.attr('tarea-fechaEstado')};	
 		        // POST to server using $.post or $.ajax
 		        $.ajax({
 		            type: 'PUT',
@@ -397,12 +398,12 @@ $(document).ready(function(){
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
+                            <a href="{% url 'principal.views.ver_reuniones' sprint.id %}">
                                 <i class="fa fa-th"></i> <span>Reuniones</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
+                            <a href="{% url 'principal.views.ver_graficas' sprint.id %}">
                                 <i class="fa fa-th"></i> <span>Gráficas</span>
                             </a>
                         </li>
@@ -446,8 +447,8 @@ $(document).ready(function(){
             	{% for dato in tareas %}
 	            	{% if dato.estado = 0 %}			        
 			            	{% if historia.id = dato.historia_id %}
-				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-resumen="{{dato.resumen}}" tarea-descripcion="{{dato.descripcion}}" tarea-esfuerzo="{{dato.esfuerzo}}" tarea-estado="{{dato.estado}}" tarea-realizador="{{dato.realizador}}" tarea-historia="{{dato.historia}}" tarea-proyecto="{{dato.proyecto}}" tarea-creador="{{dato.creador}}">
-									<li class="sortable-item">
+				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-resumen="{{dato.resumen}}" tarea-descripcion="{{dato.descripcion}}" tarea-esfuerzo="{{dato.esfuerzo}}" tarea-estado="{{dato.estado}}" tarea-realizador="{{dato.realizador}}" tarea-historia="{{dato.historia}}" tarea-proyecto="{{dato.proyecto}}" tarea-creador="{{dato.creador}}" tarea-fechaEstado="{{fechaHoy|date:"Y-m-d"}}">
+									<li class="sortable-item {% if personal.usuario.id != dato.realizador.miembro.usuario.id%} ui-state-disabled {% endif %}">
 										<!-- todo text -->
 											<div class="navbar-right">
 												<div class="tools">
@@ -489,9 +490,9 @@ $(document).ready(function(){
             	{% for dato in tareas %}
 	            	{% if dato.estado = 1 %}			        
 			            	{% if historia.id = dato.historia_id %}
-				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="1">
+				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="1" tarea-fechaEstado="{{fechaHoy|date:"Y-m-d"}}"> 
 				            		                                       
-									<li class="sortable-item">
+									<li class="sortable-item {% if personal.usuario.id != dato.realizador.miembro.usuario.id%} ui-state-disabled {% endif %}">
 										<!-- todo text -->
 											<div class="navbar-right">
 												<div class="tools">
@@ -532,8 +533,8 @@ $(document).ready(function(){
             	{% for dato in tareas %}
 	            	{% if dato.estado = 2 %}			        
 			            	{% if historia.id = dato.historia_id %}
-				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="2">
-									<li class="sortable-item">
+				            	<div class="tarea" tarea-id="{{dato.id}}" tarea-estado="2" tarea-fechaEstado="{{fechaHoy|date:"Y-m-d"}}">
+									<li class="sortable-item {% if personal.usuario.id != dato.realizador.miembro.usuario.id%} ui-state-disabled {% endif %}">
 										<!-- todo text -->
 											<div class="navbar-right">
 												<div class="tools">

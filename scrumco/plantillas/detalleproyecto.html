@@ -2,9 +2,60 @@
 
 {% block titulo %}ScrumCO{% endblock %}
 
-{% block style_css %}{% endblock %}
+{% block style_css %}
+<style>
+.active2{	
+	background-color:#f9f9f9;
+}
+</style>
+{% endblock %}
 
 {% block script %}{% endblock %}
+
+{% block navegacion %}
+				<div class="navbar-header">
+			      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand">{{proyecto.nombreProyecto|capfirst}}</a>
+			    </div>
+			
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul style="margin-left: 10%;" class="nav navbar-nav">
+			        <li class="active2">
+                            <a href="/">
+                                <i class="fa fa-dashboard"></i> <span> Dashboard </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_historias' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Product backlog</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Sprints</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Planning poker</span>
+                            </a>
+                        </li>
+			      </ul>
+
+
+
+{% endblock %}
 
 {% block notimensajes %}
 						<!-- Messages: style can be found in dropdown.less-->

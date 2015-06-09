@@ -24,7 +24,10 @@ class TareaViewSet(viewsets.ModelViewSet):
         """ Updates the object identified by the pk """
         tarea = self.get_object()
         estadoNuevo=request.DATA['estado']
+        fechaEstado=request.DATA['fechaEstado']
+        print fechaEstado
         tarea.estado = estadoNuevo # your custom code
+        tarea.fechaEstado = fechaEstado
         tarea.save()
         return Response({'estado': 'cambiado'})
     

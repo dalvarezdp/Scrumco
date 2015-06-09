@@ -9,7 +9,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 import re
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm, SelectSprintForm
 
@@ -559,6 +559,8 @@ def nueva_tarea_modal(request, id_proyecto, id_historia):
 
 @login_required(login_url='/ingresar')    
 def ver_muro(request, id_sprint):
+    fechaHoy=date.today()
+    fechaHoy.strftime("%y-%m-%d")
     usuario=request.user
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
@@ -572,7 +574,7 @@ def ver_muro(request, id_sprint):
             tareas=Tarea.objects.filter(historia__in=historias)
           
     if usuario.is_authenticated():
-        return render_to_response('muro.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('muro.html', {'fechaHoy':fechaHoy,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -776,12 +778,87 @@ def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
             
         existe = Poker.objects.filter(historia=historia)
         existe.delete()                  
-            
- 
     
           
     if usuario.is_authenticated():
          return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,id_sprint])) 
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request)) 
+    
+    
+@login_required(login_url='/ingresar')    
+def ver_graficas(request, id_sprint):
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            
+    dias = sprint.fechaFin - sprint.fechaInicio
+    listaEtiquetaGrafica=[]
+    sumaEsfuerzo=[]   
+    suma=0
+    datosTareasGrafica=[]
+    esfuerzoIdeal=[]
+    
+    for tarea in tareas:
+        suma=suma+tarea.esfuerzo
+        datosTareasGrafica.append(tarea.esfuerzo)
+    
+    media=suma/dias.days
+    valor=suma+media
+    
+    for i in range(dias.days):
+        fecha=sprint.fechaInicio + timedelta(days=i)       
+        for tarea in tareas:
+            if (tarea.fechaEstado==fecha) and (tarea.estado == 2):
+                print "tarea terminada"
+                suma=suma-tarea.esfuerzo
+                print suma
+        sumaEsfuerzo.append(str(suma))
+                
+        valor=valor-media
+        esfuerzoIdeal.append(str(valor))
+        
+        listaEtiquetaGrafica.append(fecha.strftime("%d %b"))
+    #EtiquetaGraficas="'"+"', '".join(EtiquetaGraficas)+"'"
+    
+    
+    sumaEsfuerzo=",".join(sumaEsfuerzo)
+    esfuerzoIdeal=",".join(esfuerzoIdeal)
+    
+    print esfuerzoIdeal
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('graficas.html', {'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
 
+
+@login_required(login_url='/ingresar')    
+def ver_reuniones(request, id_sprint):
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+          
+    if usuario.is_authenticated():
+        return render_to_response('reuniones.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    

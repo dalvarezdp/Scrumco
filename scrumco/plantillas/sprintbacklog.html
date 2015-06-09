@@ -268,12 +268,12 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
+                            <a href="{% url 'principal.views.ver_reuniones' sprint.id %}">
                                 <i class="fa fa-th"></i> <span>Reuniones</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/proyectos">
+                            <a href="{% url 'principal.views.ver_graficas' sprint.id %}">
                                 <i class="fa fa-th"></i> <span>Gráficas</span>
                             </a>
                         </li>

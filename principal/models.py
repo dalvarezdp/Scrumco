@@ -79,6 +79,7 @@ class Historia(models.Model):
 
 
 class Tarea(models.Model):
+    fechaEstado = models.DateField(db_index=False, auto_now_add=False, blank="true", null="true")
     resumen = models.CharField(max_length=100, unique=False)
     descripcion = models.TextField()
     esfuerzo = models.IntegerField(blank="true", null="true")
