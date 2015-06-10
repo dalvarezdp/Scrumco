@@ -309,6 +309,12 @@
 					{% for dato in historias %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
+						  	<div class="navbar-right">
+						  	 		
+                                <a href='{% url 'principal.views.editar_proyecto' dato.id %}'><i class="fa fa-edit"></i></a>
+                                <a href='{% url 'principal.views.eliminar_proyecto' dato.id %}'><i class="fa fa-trash-o"></i></a>
+                                            				  	 	
+						  	</div>
 						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">

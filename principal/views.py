@@ -236,6 +236,67 @@ def nuevo_proyecto(request):
     return render_to_response('registroproyecto.html',{'formulario':formulario, 'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
 
 
+@login_required(login_url='/ingresar')    
+def editar_proyecto(request,id_proyecto):
+    usuario=request.user
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            miembros = Miembro.objects.filter(jefe=personal.id)
+    if request.method == 'POST':
+        formulario=ProyectoForm(request.POST)
+        if formulario.is_valid():
+            nombreProyecto = request.POST['nombreProyecto']
+            fechaInicio = request.POST['fechaInicio']
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            descripcion = request.POST['descripcion']
+            foco = request.POST['foco']
+            
+            if not nombreProyecto or not fechaInicio or not descripcion:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                try:              
+                    existe = Proyecto.objects.get(nombreProyecto=nombreProyecto)
+                    return HttpResponseRedirect('/proyectoexiste')
+                except:
+                    #try:                        
+                        proyecto.nombreProyecto=nombreProyecto
+                        proyecto.fechaInicio=fechaInicio
+                        proyecto.descripcion=descripcion
+                        proyecto.foco=foco
+                        proyecto.save()
+                    #except:
+                        #return HttpResponseRedirect('/passdiferentes')
+                                 
+            return HttpResponseRedirect('/proyectos')
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = ProyectoForm()
+    return render_to_response('editarproyecto.html',{'proyecto':proyecto,'formulario':formulario, 'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')
+def eliminar_proyecto(request,id_proyecto):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyectos=Proyecto.objects.filter(jefeProyecto=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyectos=Equipo.objects.filter(miembro=personal.id)
+            
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    proyecto.detele()
+          
+    if usuario.is_authenticated():
+        return render_to_response('proyectos.html',{'personal':personal, 'proyectos':proyectos}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
 
 @login_required(login_url='/ingresar')    
 def detalle_proyecto(request, id_proyecto):

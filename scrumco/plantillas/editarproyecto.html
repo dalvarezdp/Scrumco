@@ -2,9 +2,44 @@
 
 {% block titulo %}ScrumCO{% endblock %}
 
-{% block style_css %}{% endblock %}
+{% block style_css %}
+		<link href="{{STATIC_URL}}css/ionslider/normalize.css" rel="stylesheet" type="text/css"/>
+		<!-- Ion Slider -->
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.css" rel="stylesheet" type="text/css" />
+        <!-- ion slider Nice -->
+        <link href="{{STATIC_URL}}css/ionslider/ion.rangeSlider.skinFlat.css" rel="stylesheet" type="text/css" />
+        <!-- bootstrap slider -->
+        <link href="{{STATIC_URL}}css/bootstrap-slider/slider.css" rel="stylesheet" type="text/css" />
 
-{% block script %}{% endblock %}
+{% endblock %}
+
+{% block script %}
+
+		<!-- Ion Slider -->
+        <script src="{{STATIC_URL}}js/plugins/ionslider/ion.rangeSlider.min.js" type="text/javascript"></script>
+        <!-- Bootstrap slider -->
+        <script src="{{STATIC_URL}}js/plugins/bootstrap-slider/bootstrap-slider.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+            $(function() {
+                /* BOOTSTRAP SLIDER */
+                $('.slider').slider();
+
+                /* ION SLIDER */
+                $("#foco").ionRangeSlider({
+                    min: 0,
+                    max: 100,
+                    from: 70,
+                    type: 'single',
+                    step: 10,
+                    postfix: " %",
+                    prettify: false,
+                    hasGrid: true
+                });
+            });
+        </script>
+
+{% endblock %}
 
 {% block notimensajes %}
 						<!-- Messages: style can be found in dropdown.less-->
@@ -251,12 +286,12 @@
 {% block sidebarlateral %}
 						<li>
                             <a href="/">
-                                <i class="fa fa-th"></i> <span>Dashboard</span>
+                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
                             </a>
                         </li>
                         <li class="active">
                             <a href="/proyectos">
-                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
+                                <i class="fa fa-th"></i> <span>Proyectos</span> <small class="badge pull-right bg-green">nuevo</small>
                             </a>
                         </li>
                         <li>
@@ -269,50 +304,86 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Proyectos
+                        Editar proyecto
                     </h1>
                     <ol class="breadcrumb">
-                    	{% if personal.usuario.is_superuser %}
-                        	<li><a href="/proyecto/nuevo/"><i class="fa fa-plus"></i> Nuevo proyecto</a></li>
-                        {% endif %}
+                        
                     </ol>
                 </section>
 {% endblock %}
 
 {% block contenido %}
-				{% if personal.usuario.is_superuser %}
-					{% for dato in proyectos %}
-						<div class="panel panel-success">
-								
-						  <div class="panel-heading">
-						  	<div class="navbar-right">
-						  	 		
-                                <a href='{% url 'principal.views.editar_proyecto' dato.id %}'><i class="fa fa-edit"></i></a>
-                                <a href='{% url 'principal.views.eliminar_proyecto' dato.id %}'><i class="fa fa-trash-o"></i></a>
-                                            				  	 	
-						  	</div>
-						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.id %}'>{{dato.nombreProyecto|capfirst}} - {{dato.fechaInicio|date:"j F, Y"}}</a></h3>					    
-						  </div>
-						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
-						  </div>
-						</div>
-					{% empty %}
-						<div class="alert alert-warning" role="alert">Aún no has registrado ningún proyecto.</div>
-					{% endfor %}
-				{% else %}
-					{% for dato in proyectos %}
-						<div class="panel panel-success">
-						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.id %}'>{{dato.proyecto.nombreProyecto|capfirst}} - {{dato.proyecto.fechaInicio|date:"j F, Y"}}</a></h3>						    
-						  </div>
-						  <div class="panel-body">
-						    {{dato.proyecto.descripcion|capfirst}}
-						  </div>
-						</div>
-					{% empty %}
-						<div class="alert alert-warning" role="alert">No hay ningún proyecto en el que estés colaborando.</div>
-					{% endfor %}
-				{% endif %}
-
-{% endblock %}                        
+			
+				<section class="content">
+					<!-- form start -->
+                    <form action="" method="post">{% csrf_token %}
+	                    <div class="row">
+	                        <!-- left column -->
+	                        <div class="col-md-6">
+	                            <!-- general form elements -->
+	                            <div class="box box-primary">
+	                                <div class="box-header">
+	                                    <h3 class="box-title">Información del proyecto</h3>
+	                                </div><!-- /.box-header -->	   
+	                                    <div class="box-body">                         	
+	                                    	<div class="form-group">
+	                                    		<label>Nombre</label>
+						                        <input type="text" name="nombreProyecto" id="id_nombreProyecto" class="form-control" placeholder="nombre" value="{{proyecto.nombreProyecto}}"/>
+						                    </div>
+						                    <div class="form-group">
+						                    	<label>Fecha inicio</label>
+						                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" placeholder="fecha" value="{{proyecto.fechaInicio|date:"Y-m-d"}}"/>
+						                    </div>
+						                    <div class="form-group">
+						                    	<label>Descripción</label>
+						                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción">{{proyecto.descripcion}}</textarea>
+						                    </div>
+						                    <div class="form-group">
+						                    	<label>Factor de foco</label>
+						                    	<input id="foco" type="text"  name="foco" value="{{proyecto.foco}}"/>
+						                    </div>
+	                                    </div><!-- /.box-body -->	
+	                                    <div class="box-footer">
+	                                        <button type="submit" class="btn btn-primary">Actualizar proyecto</button>
+	                                    </div>	           
+	                            </div><!-- /.box -->
+	                        </div><!--/.col (left) -->
+	                        <!-- right column -->
+	                        <div class="col-md-6">
+	                            <!-- general form elements disabled -->
+	                            <div class="box box-warning">
+	                                <div class="box-header">
+	                                    <h3 class="box-title">Equipo del proyecto</h3>
+	                                </div><!-- /.box-header -->                               	                                    
+	                                    <div class="box-body">
+	                                    	<div class="form-group">
+	                                    		<label>Seleccionar miembros</label>
+						                        <select multiple="multiple" name="equipo" class="form-control">
+							                        {% for dato in miembros %}
+							                        		
+									                        	{% if not dato.usuario.first_name %}
+									                        		
+																	<option value="{{dato.id}}" {% if dato.id == dato2.id %}selected{% endif %}>{{dato.usuario.username|capfirst}}</option>
+																	
+																{% else %}
+																	<option value="{{dato.id}}" {% if dato.id == dato2.id %}selected{% endif %}>{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
+																{% endif %}													
+													{% empty %}
+															
+													{% endfor %}                    
+												</select>
+						                        
+						                    </div>            
+		                                </div><!-- /.box-body -->	                                                                
+	                            </div><!-- /.box -->
+	                        </div><!--/.col (right) -->
+	                    </div>   <!-- /.row -->
+					</form>	                   
+                </section><!-- /.content -->
+			{% comment %}
+			<form action="" method="post">{% csrf_token %}
+				{{formulario.as_p}}
+				<button type="submit" class="btn btn-primary">Añadir proyecto</button>
+			</form>
+			{% endcomment %}
+{% endblock %}   
