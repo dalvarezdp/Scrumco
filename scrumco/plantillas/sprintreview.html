@@ -267,10 +267,18 @@
                                 <i class="fa fa-th"></i> <span>Muro</span>
                             </a>
                         </li>
-                        <li class="active">
-                            <a href="{% url 'principal.views.ver_reuniones' sprint.id %}">
-                                <i class="fa fa-th"></i> <span>Reuniones</span>
+                        <li class="treeview active">
+                            <a href="#"> 
+                                <i class="fa fa-laptop"></i>
+                                <span>Reuniones</span>
+                                <i class="fa fa-angle-left pull-right"></i>
                             </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{% url 'principal.views.ver_sprintplanning' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Planning</a></li>
+                                <li class="active"><a href="{% url 'principal.views.ver_sprintreview' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Review</a></li>
+                                <li><a href="{% url 'principal.views.ver_sprintretrospective' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Retrospective</a></li>
+                                <li><a href="{% url 'principal.views.ver_dailyscrum' sprint.id %}"><i class="fa fa-angle-double-right"></i> Daily Scrum</a></li>
+                            </ul>
                         </li>
                         <li>
                             <a href="{% url 'principal.views.ver_graficas' sprint.id %}">
@@ -283,14 +291,82 @@
 {% block headersuperior %}
 				<section class="content-header">
                     <h1>
-                        Reuniones
+                        Sprint Review
                     </h1>
                     
                 </section>
 {% endblock %}
 
 {% block contenido %}
+			<!-- row -->
+                    <div class="row">                        
+                        <div class="col-md-7">
+                        	{% if comentarios %}
+                        		<!-- The time line -->
+		                        <ul class="timeline">
+		                        	{% for fechaD in fechasDiferentes %}	
+				                        		<!-- timeline time label -->
+				                                <li class="time-label">
+				                                	{% if fechaD == hoy %} 
+				                                	<span class="bg-red">
+				                                	{% else %} 	
+				                                    <span class="bg-green">
+				                                   	{% endif %} 
+				                                        {{fechaD}}
+				                                    </span>
+				                                </li>
+				                                <!-- /.timeline-label -->
+				                        {% for comentario in comentarios %}	
+				                        	{% if fechaD == comentario.fecha %}                                
+				                                <!-- timeline item -->
+				                                <li>
+				                                    <i class="fa fa-comments bg-yellow"></i>
+				                                    <div class="timeline-item">
+				                                        <span class="time"><i class="fa fa-clock-o"></i> {{comentario.fechahora|date:"G:i"}}</span>
+				                                        <h3 class="timeline-header"><a href="#">{{comentario.persona.miembro.usuario.first_name}} {{comentario.persona.miembro.usuario.last_name}}</a> Review del sprint</h3>
+				                                        <div class="timeline-body">
+				                                            {{comentario.mensaje}}
+				                                        </div>
+				                                    </div>
+				                                </li>
+				                                <!-- END timeline item -->
+				                             {% endif %}
+			                            
+				                    	{% endfor %}
+				                    			
+				                   {% endfor %}
+		                    			<!-- END timeline item -->
+		                                <li>
+		                                    <i class="fa fa-clock-o"></i>
+		                                </li>
+		                    	</ul>
+                            {% else %}
+									<div class="alert alert-warning" role="alert">Aún no hay ningún comentario.</div>							  
 			
+							{% endif %}
+                        </div><!-- /.col -->
+                        <div class="col-md-5">
+                        	<!-- general form elements disabled -->
+                            <div class="box box-warning">
+                                <div class="box-header">
+                                    <h3 class="box-title">Información</h3>
+                                </div><!-- /.box-header -->
+                                <div class="box-body">
+                                	<p style="text-align : justify;">Reunión informal donde el equipo presenta al cliente los requisitos completados en la iteración, en forma de incremento de producto preparado para ser entregado con el mínimo esfuerzo, haciendo un recorrido por ellos lo más real y cercano posible al objetivo que se pretende cubrir.</p>
+                                    <form action="" method="post">{% csrf_token %}
+					                    <div class="form-group">
+					                    	<label>Mensaje</label>
+					                    	<textarea class="form-control" name="mensaje" id="mensaje" rows="3" placeholder="Mensaje"></textarea>
+					                    </div>
+					                    <div class="box-footer">
+	                                        <button type="submit" class="btn btn-primary">Comentar</button>
+	                                    </div>
+                                    </form>                         
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                        </div><!--/.col (right) -->
+                        </div>
+                    </div><!-- /.row -->
 
 
 {% endblock %}                        

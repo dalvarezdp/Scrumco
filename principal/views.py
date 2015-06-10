@@ -1,4 +1,4 @@
-from principal.models import Personal, Miembro, Proyecto, Equipo, Historia, Tarea, Sprint, Poker
+from principal.models import Personal, Miembro, Proyecto, Equipo, Historia, Tarea, Sprint, Poker, ComentarioReuniones
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,10 +8,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 import re
 from datetime import date, datetime, timedelta
 from django.core.exceptions import ObjectDoesNotExist
-from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm, SelectSprintForm
+from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm, SelectSprintForm, ComentarioReunionesForm
 
 # Create your views here.
 
@@ -843,21 +844,197 @@ def ver_graficas(request, id_sprint):
 
 
 @login_required(login_url='/ingresar')    
-def ver_reuniones(request, id_sprint):
+def ver_sprintplanning(request, id_sprint):
+    hoy=date.today()
     usuario=request.user
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    comentarios=ComentarioReuniones.objects.filter(reunion=1).order_by('-fechahora')
     if usuario.is_authenticated():
         if usuario.is_superuser:
-            personal=Personal.objects.get(usuario=usuario.id)
+            personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
+    print fechasDiferentes
+    
+    
+    if request.method == 'POST':
+        formulario=ComentarioReunionesForm(request.POST)
+        if formulario.is_valid():
+            mensaje = request.POST['mensaje']
+            
+            c = ComentarioReuniones.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                persona = personaEquipo,
+                reunion = 1,
+                mensaje = mensaje,
+            )
+            c.save()
+            
+            return HttpResponseRedirect(reverse('ver_sprintplanning',args=[sprint.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SelectSprintForm()
+    
           
     if usuario.is_authenticated():
-        return render_to_response('reuniones.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('sprintplanning.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+@login_required(login_url='/ingresar')    
+def ver_sprintreview(request, id_sprint):
+    hoy=date.today()
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    comentarios=ComentarioReuniones.objects.filter(reunion=2).order_by('-fechahora')
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
+    print fechasDiferentes
+    
+    
+    if request.method == 'POST':
+        formulario=ComentarioReunionesForm(request.POST)
+        if formulario.is_valid():
+            mensaje = request.POST['mensaje']
+            
+            c = ComentarioReuniones.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                persona = personaEquipo,
+                reunion = 2,
+                mensaje = mensaje,
+            )
+            c.save()
+            
+            return HttpResponseRedirect(reverse('ver_sprintreview',args=[sprint.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SelectSprintForm()
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprintreview.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+@login_required(login_url='/ingresar')    
+def ver_sprintretrospective(request, id_sprint):
+    hoy=date.today()
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    comentarios=ComentarioReuniones.objects.filter(reunion=3).order_by('-fechahora')
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
+    print fechasDiferentes
+    
+    
+    if request.method == 'POST':
+        formulario=ComentarioReunionesForm(request.POST)
+        if formulario.is_valid():
+            mensaje = request.POST['mensaje']
+            
+            c = ComentarioReuniones.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                persona = personaEquipo,
+                reunion = 3,
+                mensaje = mensaje,
+            )
+            c.save()
+            
+            return HttpResponseRedirect(reverse('ver_sprintretrospective',args=[sprint.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SelectSprintForm()
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprintretrospective.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+@login_required(login_url='/ingresar')    
+def ver_dailyscrum(request, id_sprint):
+    hoy=date.today()
+    usuario=request.user
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    comentarios=ComentarioReuniones.objects.filter(reunion=4).order_by('-fechahora')
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            
+    fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
+    print fechasDiferentes
+    
+    
+    if request.method == 'POST':
+        formulario=ComentarioReunionesForm(request.POST)
+        if formulario.is_valid():
+            mensaje = request.POST['mensaje']
+            
+            c = ComentarioReuniones.objects.create(                       
+                proyecto = proyecto,
+                sprint = sprint,
+                persona = personaEquipo,
+                reunion = 4,
+                mensaje = mensaje,
+            )
+            c.save()
+            
+            return HttpResponseRedirect(reverse('ver_dailyscrum',args=[sprint.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SelectSprintForm()
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('dailyscrum.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     

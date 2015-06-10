@@ -267,10 +267,18 @@
                                 <i class="fa fa-th"></i> <span>Muro</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="{% url 'principal.views.ver_reuniones' sprint.id %}">
-                                <i class="fa fa-th"></i> <span>Reuniones</span>
+                        <li class="treeview">
+                            <a href="#"> 
+                                <i class="fa fa-laptop"></i>
+                                <span>Reuniones</span>
+                                <i class="fa fa-angle-left pull-right"></i>
                             </a>
+                            <ul class="treeview-menu">
+                                <li><a href="{% url 'principal.views.ver_sprintplanning' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Planning</a></li>
+                                <li><a href="{% url 'principal.views.ver_sprintreview' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Review</a></li>
+                                <li><a href="{% url 'principal.views.ver_sprintretrospective' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Retrospective</a></li>
+                                <li><a href="{% url 'principal.views.ver_dailyscrum' sprint.id %}"><i class="fa fa-angle-double-right"></i> Daily Scrum</a></li>
+                            </ul>
                         </li>
                         <li>
                             <a href="{% url 'principal.views.ver_graficas' sprint.id %}">

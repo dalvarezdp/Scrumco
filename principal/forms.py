@@ -1,7 +1,7 @@
 #encoding:utf-8
 from django.forms import ModelForm
 from django import forms
-from principal.models import Personal, Proyecto, Historia, Tarea, Sprint
+from principal.models import Personal, Proyecto, Historia, Tarea, Sprint, ComentarioReuniones
 from django.contrib.auth.models import User
 
 
@@ -33,4 +33,9 @@ class SprintForm(ModelForm):
 class SelectSprintForm(forms.Form):
     class Meta:
         sprint = forms.ModelChoiceField(queryset=None,required=False)
+        
+class ComentarioReunionesForm(ModelForm):
+    class Meta:
+        model = ComentarioReuniones
+        exclude = ['proyecto', 'sprint', 'persona','reunion','fecha','fechahora']
 

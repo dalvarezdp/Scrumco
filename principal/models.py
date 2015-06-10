@@ -102,4 +102,15 @@ class Poker(models.Model):
     def __unicode__(self):
         return str(self.spVotado)
     
+class ComentarioReuniones(models.Model):
+    proyecto = models.ForeignKey(Proyecto)
+    sprint = models.ForeignKey(Sprint, blank="true", null="true")
+    persona = models.ForeignKey(Equipo)
+    reunion = models.IntegerField()
+    fecha = models.DateField(db_index=True, auto_now_add=True)
+    fechahora = models.DateTimeField(db_index=True, auto_now_add=True)
+    mensaje = models.TextField()
+    def __unicode__(self):
+        return str(self.reunion)
+    
 
