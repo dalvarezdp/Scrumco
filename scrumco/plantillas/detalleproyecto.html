@@ -3,11 +3,7 @@
 {% block titulo %}ScrumCO{% endblock %}
 
 {% block style_css %}
-<style>
-.active2{	
-	background-color:#f9f9f9;
-}
-</style>
+
 {% endblock %}
 
 {% block script %}{% endblock %}
@@ -23,7 +19,8 @@
 			      <a class="navbar-brand">{{proyecto.nombreProyecto|capfirst}}</a>
 			    </div>
 			
-			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    
+				<!-- Collect the nav links, forms, and other content for toggling -->
 			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			      <ul style="margin-left: 10%;" class="nav navbar-nav">
 			        <li class="active2">
@@ -52,7 +49,6 @@
                             </a>
                         </li>
 			      </ul>
-
 
 
 {% endblock %}
@@ -300,6 +296,24 @@
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
 {% block sidebarlateral %}
+						<li>
+                            <a href="/">
+                                <i class="fa fa-th"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/proyectos">
+                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
+                            </a>
+                        </li>
+                        
+						<li class="header">{{proyecto.nombreProyecto|upper}}</li>
+						
 						<li class="active">
                             <a href="/">
                                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
@@ -325,6 +339,7 @@
                                 <i class="fa fa-th"></i> <span>Planning poker</span>
                             </a>
                         </li>
+                        
                  
 {% endblock %}
 

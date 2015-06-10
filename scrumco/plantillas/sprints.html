@@ -251,9 +251,22 @@
 {% block sidebarlateral %}
 						<li>
                             <a href="/">
-                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                                <i class="fa fa-th"></i> <span>Dashboard</span>
                             </a>
                         </li>
+                        <li class="active">
+                            <a href="/proyectos">
+                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
+                            </a>
+                        </li>
+                        
+						<li class="header">{{proyecto.nombreProyecto|upper}}</li>
+						
                         <li>
                             <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
                                 <i class="fa fa-th"></i> <span>Product backlog</span>
@@ -296,7 +309,7 @@
 					{% for dato in sprints %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_sprint' dato.id %}'>{{dato.nombre|capfirst}}</a></h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_sprintbacklog' dato.id %}'>{{dato.nombre|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
 						    {{dato.Objetivo|capfirst}}

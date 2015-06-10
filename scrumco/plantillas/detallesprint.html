@@ -6,6 +6,56 @@
 
 {% block script %}{% endblock %}
 
+{% block navegacion %}
+				<div class="navbar-header">
+			      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand">{{proyecto.nombreProyecto|capfirst}}</a>
+			    </div>
+			
+			    
+				<!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      <ul style="margin-left: 10%;" class="nav navbar-nav">
+			        	<li class="active2">
+                            <a href="/">
+                                <i class="fa fa-dashboard"></i> <span> Dashboard </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_sprintbacklog' sprint.id %}'>
+                                <i class="fa fa-th"></i> <span>Sprint Backlog</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.ver_muro' sprint.id %}'>
+                                <i class="fa fa-th"></i> <span>Muro</span>
+                            </a>
+                        </li>
+                        <li class="dropdown">
+				          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-laptop"></i> Reuniones <span class="caret"></span></a>
+				          <ul class="dropdown-menu" role="menu">
+				            <li><a href="{% url 'principal.views.ver_sprintplanning' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Planning</a></li>
+                                <li><a href="{% url 'principal.views.ver_sprintreview' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Review</a></li>
+                                <li><a href="{% url 'principal.views.ver_sprintretrospective' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Retrospective</a></li>
+                                <li><a href="{% url 'principal.views.ver_dailyscrum' sprint.id %}"><i class="fa fa-angle-double-right"></i> Daily Scrum</a></li>
+				          </ul>
+				        </li>
+                        
+                        <li>
+                            <a href="{% url 'principal.views.ver_graficas' sprint.id %}">
+                                <i class="fa fa-th"></i> <span>Gráficas</span>
+                            </a>
+                        </li>
+			      </ul>
+
+
+{% endblock %}
+
 {% block notimensajes %}
 						<!-- Messages: style can be found in dropdown.less-->
                         <li class="dropdown messages-menu">
@@ -249,39 +299,46 @@
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
 {% block sidebarlateral %}
-						<li class="active">
+						<li>
                             <a href="/">
-                                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                                <i class="fa fa-th"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/proyectos">
+                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.lista_sprintbacklog' sprint.id %}'>
-                                <i class="fa fa-th"></i> <span>Sprint Backlog</span>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
+                            </a>
+                        </li>
+                        
+						<li class="header">{{proyecto.nombreProyecto|upper}}</li>
+						
+						<li>
+                            <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
+                                <i class="fa fa-th"></i> <span>Product backlog</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Sprints</span>
                             </a>
                         </li>
                         <li>
-                            <a href='{% url 'principal.views.ver_muro' sprint.id %}'>
-                                <i class="fa fa-th"></i> <span>Muro</span>
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Calendario</span>
                             </a>
-                        </li>
-                        <li class="treeview">
-                            <a href="#"> 
-                                <i class="fa fa-laptop"></i>
-                                <span>Reuniones</span>
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="{% url 'principal.views.ver_sprintplanning' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Planning</a></li>
-                                <li><a href="{% url 'principal.views.ver_sprintreview' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Review</a></li>
-                                <li><a href="{% url 'principal.views.ver_sprintretrospective' sprint.id %}"><i class="fa fa-angle-double-right"></i> Sprint Retrospective</a></li>
-                                <li><a href="{% url 'principal.views.ver_dailyscrum' sprint.id %}"><i class="fa fa-angle-double-right"></i> Daily Scrum</a></li>
-                            </ul>
                         </li>
                         <li>
-                            <a href="{% url 'principal.views.ver_graficas' sprint.id %}">
-                                <i class="fa fa-th"></i> <span>Gráficas</span>
+                            <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
+                                <i class="fa fa-th"></i> <span>Planning poker</span>
                             </a>
                         </li>
+						
+						
 
 {% endblock %}
 
@@ -300,59 +357,7 @@
 {% endblock %}
 
 {% block contenido %}
-				<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Brand</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-      <form class="navbar-form navbar-left" role="search">
-        <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search">
-        </div>
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+				
 
 
 
