@@ -309,7 +309,9 @@
 					
 					    <div class="panel panel-default">
 						  <!-- Default panel contents -->
-						  <div class="panel-heading">{{historia.titulo|capfirst}}</div>
+						  <div class="panel-heading">
+						  	{{historia.titulo|capfirst}}
+						  </div>
 						  <div class="box-body table-responsive no-padding">
                           	<table class="table table-hover">
                               <tr>
@@ -319,6 +321,7 @@
                                 <th>Estado</th>
                                 <th>Esfuerzo</th>
                                 <th>Realizador</th>
+                                <th> </th>
                               </tr>
                     {% for dato in tareas %}
                               <tr>
@@ -337,8 +340,12 @@
                         			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
                         		{% else %}
 									<td><small class="label label-danger">Sin asignar</small></td>
-								{% endif %}                               
-                              </tr>						  
+								{% endif %}    
+								<td>          
+									<a href='{% url 'principal.views.editar_tarea' dato.id %}'><i class="fa fa-edit"></i></a>
+                                	<a href='{% url 'principal.views.eliminar_tarea' dato.id %}'><i class="fa fa-trash-o"></i></a>
+                                </td>                 
+                              </tr>	   					  
 					{% endfor %}
                             </table>
                           </div><!-- /.box-body -->

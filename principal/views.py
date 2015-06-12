@@ -170,7 +170,64 @@ def nuevo_miembro(request):
             return HttpResponseRedirect('/noFormularioValido')
     else:
         formulario = UserCreationForm()
-    return render_to_response('registromiembro.html',{'formulario':formulario}, context_instance=RequestContext(request))
+    return render_to_response('registromiembro.html',{'personal':personal,'formulario':formulario}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')   
+def editar_miembro(request,id_usuario):
+    usuario=request.user
+    miembro = Miembro.objects.get(usuario=id_usuario)
+    user = User.objects.get(id=id_usuario)
+
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Miembro.objects.get(usuario=miembro.usuario)     
+        else:
+            personal=Miembro.objects.get(usuario=id_usuario)
+
+    if request.method == 'POST':
+        formulario = UserForm(request.POST)
+        if formulario.is_valid():
+            nombreuser = request.POST['username']
+            clave = request.POST['password1']
+            clave2 = request.POST['password2']
+            nombre = request.POST['first_name']
+            apellidos = request.POST['last_name']
+            email = request.POST['email']
+            telefono = request.POST['telefono']
+            if not nombreuser:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:
+                print nombreuser
+                if not clave or not clave2:                  
+                    user.username = nombreuser
+                    user.first_name = nombre
+                    user.last_name = apellidos
+                    user.email = email
+                    user.save()
+                    miembro.telefono = telefono
+                    miembro.save()
+                elif clave == clave2:
+                    user.username = nombreuser
+                    user.set_password(clave)
+                    user.first_name = nombre
+                    user.last_name = apellidos
+                    user.email = email
+                    user.save()
+                    miembro.telefono = telefono
+                    miembro.save()
+                else:
+                    HttpResponseRedirect('/passdiferentes')          
+                    
+                 
+                return HttpResponseRedirect('/miembros')
+        else:
+            print formulario.errors
+            return HttpResponseRedirect('/noFormularioValido')
+    else:
+        formulario = UserForm()
+    return render_to_response('editarmiembro.html',{'personal':personal,'miembro':miembro,'formulario':formulario}, context_instance=RequestContext(request))
+
 
 
 @login_required(login_url='/ingresar')
@@ -377,6 +434,83 @@ def nueva_historia(request, id_proyecto):
 
 
 @login_required(login_url='/ingresar')    
+def editar_historia(request, id_historia):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            historia=Historia.objects.get(id=id_historia)
+            proyecto=Proyecto.objects.get(id=historia.proyecto.id)    
+    if request.method == 'POST':
+        formulario=HistoriaForm(request.POST)
+        if formulario.is_valid():
+            titulo = request.POST['titulo']
+            prioridad = request.POST['prioridad']
+            descripcion = request.POST['descripcion']
+            aceptacion = request.POST['aceptacion']
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            sp = request.POST['sp']
+          
+            if not titulo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:             
+                e = Proyecto.objects.get(pk=proyecto.id)
+                e.spProyecto -= int(historia.sp)
+                e.spProyecto += int(sp)
+                e.save()
+            #try:              
+            
+                historia.titulo = titulo
+                historia.prioridad=prioridad
+                historia.descripcion=descripcion
+                historia.aceptacion=aceptacion
+                historia.sp=int(sp)
+                historia.estado = 0
+                historia.proyecto = proyecto
+                historia.creador = usuario
+                historia.save()
+            #except:
+                #return HttpResponseRedirect('/passdiferentes')
+                        
+            
+            return HttpResponseRedirect(reverse('lista_historias',args=[proyecto.id]))            
+        else:
+            print formulario.errors
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = HistoriaForm()
+    return render_to_response('editarhistoria.html',{'historia':historia,'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def eliminar_historia(request, id_historia):
+    usuario=request.user
+    historia=Historia.objects.get(id=id_historia)
+    proyecto=Proyecto.objects.get(id=historia.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            historias=Historia.objects.filter(proyecto_id=proyecto.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            historias=Historia.objects.filter(proyecto_id=proyecto.id)
+        
+        e = Proyecto.objects.get(pk=proyecto.id)
+        e.historiasP -= 1
+        e.spProyecto -= int(historia.sp)
+        e.save()
+                       
+        historia.delete()
+          
+    if usuario.is_authenticated():
+        return render_to_response('historias.html', {'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+
+@login_required(login_url='/ingresar')    
 def detalle_historia(request, id_historia):
     usuario=request.user
     historia=Historia.objects.get(id=id_historia)
@@ -393,6 +527,7 @@ def detalle_historia(request, id_historia):
         return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
+
 
 @login_required(login_url='/ingresar')    
 def nueva_tarea(request, id_proyecto, id_historia):
@@ -427,6 +562,63 @@ def nueva_tarea(request, id_proyecto, id_historia):
     else:
         formulario = TareaForm()
     return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def editar_tarea(request, id_tarea):
+    usuario=request.user
+    tarea=Tarea.objects.get(pk=id_tarea)
+    historia=Historia.objects.get(pk=tarea.historia.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=historia.proyecto.id)
+    
+    if request.method == 'POST':
+        formulario=TareaForm(request.POST)
+        if formulario.is_valid():
+            resumen = request.POST['resumen']           
+            descripcion = request.POST['descripcion']
+            esfuerzo = request.POST['esfuerzo']
+          
+            if not resumen or not esfuerzo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:    
+                tarea.resumen = resumen
+                tarea.descripcion = descripcion                 
+                tarea.estado = 0
+                tarea.esfuerzo = esfuerzo
+                tarea.creador = usuario
+                tarea.save()                    
+            
+            return HttpResponseRedirect(reverse('detalle_historia',args=[historia.id]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = TareaForm()
+    return render_to_response('editartarea.html',{'tarea':tarea, 'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def eliminar_tarea(request, id_tarea):
+    usuario=request.user
+    tarea=Tarea.objects.get(pk=id_tarea)
+    historia=Historia.objects.get(pk=tarea.historia.id)
+    proyecto=Proyecto.objects.get(pk=historia.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia_id=historia.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia_id=historia.id)
+    
+    tarea.delete()
+          
+    if usuario.is_authenticated():
+        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
 
 
 @login_required(login_url='/ingresar')    
@@ -525,6 +717,111 @@ def nuevo_sprint(request, id_proyecto):
 
 
 @login_required(login_url='/ingresar')    
+def editar_sprint(request, id_sprint):
+    dedicaciones=[]
+    usuario=request.user
+    sprint= Sprint.objects.get(id=id_sprint)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+            personal=Personal.objects.get(usuario=usuario.id)
+            equipo = Equipo.objects.filter(proyecto_id=sprint.proyecto.id).order_by('id')
+            historias=Historia.objects.filter(proyecto_id=sprint.proyecto.id).filter(sprint_id=None)
+            historiasSprint=Historia.objects.filter(sprint_id=id_sprint)
+
+    if request.method == 'POST':
+        formulario=SprintForm(request.POST)
+        if formulario.is_valid():
+            nombreSprint = request.POST['nombre']
+            fechaInicio = request.POST['fechaInicio']
+            objetivo = request.POST['Objetivo']
+            duracion = request.POST['duracion']
+            fechaRevision = request.POST['fechaRevision']
+            finSemana = request.POST['finSemana']
+            historiasSelectSprint = request.POST.getlist('historiasSprint')
+            
+            fechaInicio = datetime.strptime(fechaInicio,'%Y-%m-%d')
+            
+            print historiasSprint
+            print fechaInicio
+            
+            fechaFin = fechaInicio + timedelta(days=(7*(int(duracion))))
+            
+            print fechaFin
+            
+            for dato in equipo:
+                dedicaciones.append(request.POST['foco_'+str(dato.id)])  
+
+            #if fechaInicio:
+            #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
+            
+            if not nombreSprint or not fechaInicio or not objetivo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:                  
+                sprint.nombre=nombreSprint
+                sprint.fechaInicio=fechaInicio
+                sprint.fechaFin=fechaFin
+                sprint.fechaRevision=fechaRevision
+                sprint.Objetivo=objetivo
+                sprint.duracion=duracion
+                sprint.finSemana=finSemana
+                sprint.estado = 1
+                sprint.save()
+            #except:
+                #return HttpResponseRedirect('/passdiferentes')
+                
+                #Agrego al equipo la dedicacion y el sprint
+                for i in range(len(equipo)):
+                    equipo[i].dedicacion = dedicaciones[i]
+                    equipo[i].sprint = sprint
+                    equipo[i].save() 
+                
+                for dato in historiasSelectSprint: 
+                    historia = Historia.objects.get(id=dato)   
+                    print historia        
+                    historia.sprint = sprint
+                    historia.save()
+                    
+                sprintBorrar=historiasSprint.exclude(id__in=historiasSelectSprint)
+                
+                for dato in sprintBorrar: 
+                    historia = Historia.objects.get(id=dato.id)        
+                    historia.sprint = None
+                    historia.save()
+                                  
+            return HttpResponseRedirect(reverse('lista_sprints',args=[sprint.proyecto.id]))
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = SprintForm()
+    return render_to_response('editarsprint.html',{'historiasSprint':historiasSprint,'sprint':sprint,'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def cerrar_sprint(request, id_sprint):
+    usuario=request.user
+    sprint= Sprint.objects.get(id=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=sprint.proyecto.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            sprints=Sprint.objects.filter(proyecto_id=sprint.proyecto.id)
+            
+    sprint.estado = 0
+    sprint.save()
+          
+    if usuario.is_authenticated():
+        return render_to_response('sprints.html', {'personal':personal, 'sprints':sprints, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+
+
+
+
+@login_required(login_url='/ingresar')    
 def detalle_sprint(request, id_sprint):
     usuario=request.user
     sprint = Sprint.objects.get(id=id_sprint)
@@ -617,6 +914,61 @@ def nueva_tarea_modal(request, id_proyecto, id_historia):
     else:
         formulario = TareaForm()
     return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def editar_tarea_modal(request, id_tarea):
+    usuario=request.user
+    tarea= Tarea.objects.get(pk=id_tarea)
+    historia=Historia.objects.get(pk=tarea.historia.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=tarea.proyecto.id)
+    
+    if request.method == 'POST':
+        formulario=TareaForm(request.POST)
+        if formulario.is_valid():
+            resumen = request.POST['resumen']           
+            descripcion = request.POST['descripcion']
+            esfuerzo = request.POST['esfuerzo']
+          
+            if not resumen or not esfuerzo:
+                return HttpResponseRedirect('/rellenarcampos')
+            else:                     
+                tarea.resumen=resumen
+                tarea.descripcion=descripcion
+                tarea.esfuerzo=esfuerzo
+                tarea.creador = usuario
+                tarea.save()                    
+            
+            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = TareaForm()
+    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/ingresar')    
+def eliminar_tarea_modal(request, id_tarea):
+    usuario=request.user
+    tarea= Tarea.objects.get(pk=id_tarea)
+    historia=Historia.objects.get(pk=tarea.historia.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=tarea.proyecto.id)
+                           
+            tarea.delete()                   
+            
+            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
+        else:
+            return HttpResponseRedirect('/formularioNoValido')
+    else:
+        formulario = TareaForm()
+    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+
 
 
 @login_required(login_url='/ingresar')    
@@ -806,6 +1158,11 @@ def elegir_estimacion(request, id_proyecto, id_sprint, id_historia, voto):
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
             personaEquipo=Equipo.objects.get(miembro=personal.id)
             
+        
+        e = Proyecto.objects.get(pk=proyecto.id)
+        e.spProyecto -= int(historia.sp)
+        e.spProyecto += int(voto)
+        e.save()
                        
         historia.sp = voto
         historia.save()

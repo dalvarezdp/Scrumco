@@ -213,28 +213,18 @@
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header bg-light-blue">
-                                    <img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />
+                                    <img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />
                                     <p>
                                         {{personal.usuario.username|capfirst}} - Web Developer
                                         <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
-                                <!-- Menu Body -->
-                                <li class="user-body">
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Followers</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Sales</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </li>
+                                
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Perfil</a>
+                                    	<a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="btn btn-default btn-flat">Perfil</a>
+	                                    
                                     </div>
                                     <div class="pull-right">
                                         <a href="/cerrar" class="btn btn-default btn-flat">Salir</a>
@@ -244,7 +234,7 @@
                         </li>
 {% endblock %}
             
-{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />{% endblock %}
+{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />{% endblock %}
 
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
@@ -284,9 +274,10 @@
 				<!-- Small boxes (Stat box) -->
                     <div class="row">
                     	{% if personal.usuario.is_superuser %}                        
-                        <div class="col-lg-3 col-xs-6">
+                        <div class="col-lg-3 col-xs-6">  	
                             <!-- small box -->                          
                             <div class="small-box bg-yellow">
+                            	
                                 <div class="inner">
                                    
                                     <h3>
@@ -296,7 +287,7 @@
 											{{personal.usuario.first_name|capfirst}} {{personal.usuario.last_name|capfirst}}
 										{% endif %}
                                         
-                                    </h3>
+                                    </h3>           
                                     <p>
 										Administrador
                                     </p>
@@ -304,8 +295,11 @@
                                 <div class="icon">
                                     <i class="ion ion-person-add"></i>
                                 </div>
+                                <a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="small-box-footer">
+                                    Editar <i class="fa fa-edit"></i>
+                                </a>
                                 <a href="#" class="small-box-footer">
-                                    Más información <i class="fa fa-arrow-circle-right"></i>
+                                    Eliminar <i class="fa fa-trash-o"></i>
                                 </a>
                             </div>
                         </div>
@@ -330,9 +324,7 @@
 	                            <div class="icon">
 	                                <i class="ion ion-person-add"></i>
 	                            </div>
-	                            <a href="#" class="small-box-footer">
-	                                Más información <i class="fa fa-arrow-circle-right"></i>
-	                            </a>
+	                            
 	                        </div>
 	                    </div>
                         {% endif %} 
@@ -352,9 +344,12 @@
 		                             <div class="icon">
 		                                 <i class="ion ion-person-add"></i>
 		                             </div>
-		                             <a href="#" class="small-box-footer">
-		                                 Más información <i class="fa fa-arrow-circle-right"></i>
-		                             </a>
+		                             <a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
+	                                    Editar <i class="fa fa-edit"></i>
+	                                </a>
+	                                <a href="#" class="small-box-footer">
+	                                    Eliminar <i class="fa fa-trash-o"></i>
+	                                </a>
 		                        </div>
 		                   </div><!-- ./col --> 
 						{% empty %}

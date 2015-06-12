@@ -5,10 +5,17 @@ from principal.models import Personal, Proyecto, Historia, Tarea, Sprint, Coment
 from django.contrib.auth.models import User
 
 
-class UserForm(ModelForm):
+class UserForm(forms.Form):
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
+        username = forms.CharField(label='Usuario', max_length=100)
+        password1 = forms.CharField(label='Contrasena', max_length=100)
+        password2 = forms.CharField(label='Repite contrasena', max_length=100)
+        first_name = forms.CharField(label='Nombre', max_length=100)
+        last_name = forms.CharField(label='Apellidos', max_length=100)
+        email = forms.EmailField(label='Email')
+        telefono = forms.NumberInput()
+
+
         
 class ProyectoForm(ModelForm):
     class Meta:

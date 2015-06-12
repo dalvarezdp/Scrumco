@@ -268,22 +268,11 @@
                                         <small>Member since Nov. 2012</small>
                                     </p>
                                 </li>
-                                <!-- Menu Body -->
-                                <li class="user-body">
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Followers</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Sales</a>
-                                    </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </li>
+                                
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="#" class="btn btn-default btn-flat">Perfil</a>
+                                        <a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="btn btn-default btn-flat">Perfil</a>
                                     </div>
                                     <div class="pull-right">
                                         <a href="/cerrar" class="btn btn-default btn-flat">Salir</a>
@@ -349,7 +338,75 @@
 {% endblock %}
 
 {% block contenido %}
-			
+			{% for dato in tareas %}
+				
+				<div class="modal fade bs-example-modal-sm{{dato.id}}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+				  <div class="modal-dialog modal-sm">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					          <h4 class="modal-title" id="gridSystemModalLabel">Eliminar Tarea</h4>
+				        </div>
+				        <div class="modal-body">
+				        	<form action="{% url 'principal.views.eliminar_tarea_modal' dato.id%}" method="post">{% csrf_token %}
+					          <div class="container-fluid">
+					            <div class="row">
+					              
+		                    		<center><label style="font-size: 14px;">¿Seguro que desea eliminar la tarea?</label></center>
+			                        
+			                      
+					            </div>       
+					          </div>
+					        
+				        </div>
+				        <div class="modal-footer">
+				          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+				          <button type="submit" class="btn btn-primary">Si</button>
+				        </div>
+				    </div>
+				  </div>
+				</div>
+
+				<div class="modal fade" id="exampleModalEdit{{dato.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				    <div class="modal-dialog">
+					  <div class="modal-content">
+				        <div class="modal-header">
+				          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					          <h4 class="modal-title" id="gridSystemModalLabel">Editar Tarea</h4>
+				        </div>
+				        <div class="modal-body">
+				        	<form action="{% url 'principal.views.editar_tarea_modal' dato.id%}" method="post">{% csrf_token %}
+					          <div class="container-fluid">
+					            <div class="row">
+					              <div class="form-group">
+		                    		<label>Resumen</label>
+			                        <input type="text" name="resumen" id="resumen" class="form-control" placeholder="Resumen" value="{{dato.resumen}}"/>
+			                      </div>
+					            </div>
+					            <div class="row">
+					              <div class="form-group">
+			                    	<label>Descripción</label>
+			                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción">{{dato.descripcion}}</textarea>
+			                      </div>
+					            </div>	
+					            <div class="row">
+						            <div class="form-group">
+	                            		<label>Esfuerzo estimado (Horas)</label>
+				                        <input type="text" name="esfuerzo" id="esfuerzo" class="form-control" placeholder="Esfuerzo" value="{{dato.esfuerzo}}"/>
+				                    </div>	
+			                    </div>	        
+					          </div>
+					        
+				        </div>
+				        <div class="modal-footer">
+				          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+				          <button type="submit" class="btn btn-primary">Actualizar Tarea</button>
+				        </div>
+				        </form>
+				      </div><!-- /.modal-content -->
+				    </div><!-- /.modal-dialog -->
+				  </div><!-- /.modal -->
+			{% endfor %}
 
 			{% for historia in historias %}
 
@@ -433,7 +490,13 @@
                                 			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
                                 		{% else %}
 											<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
-										{% endif %}                         
+										{% endif %} 
+										<td>      
+											<a href="" data-toggle="modal" data-target="#exampleModalEdit{{dato.id}}"><i class="fa fa-edit"></i></a>
+											<!-- Small modal -->
+											<a href="" data-toggle="modal" data-target=".bs-example-modal-sm{{dato.id}}"><i class="fa fa-trash-o"></i></a>
+		                             
+		                                </td>                        
 		                              </tr>						  
 		                        {% endif %}
 							{% endfor %}
