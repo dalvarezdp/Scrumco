@@ -298,7 +298,7 @@
                                 <a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="small-box-footer">
                                     Editar <i class="fa fa-edit"></i>
                                 </a>
-                                <a href="#" class="small-box-footer">
+                                <a href='{% url 'principal.views.eliminar_miembro' personal.usuario.id %}' class="small-box-footer">
                                     Eliminar <i class="fa fa-trash-o"></i>
                                 </a>
                             </div>
@@ -347,7 +347,7 @@
 		                             <a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
 	                                    Editar <i class="fa fa-edit"></i>
 	                                </a>
-	                                <a href="#" class="small-box-footer">
+	                                <a href='{% url 'principal.views.eliminar_miembro' dato.usuario.id %}' class="small-box-footer">
 	                                    Eliminar <i class="fa fa-trash-o"></i>
 	                                </a>
 		                        </div>

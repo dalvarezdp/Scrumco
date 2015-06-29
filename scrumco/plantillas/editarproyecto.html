@@ -314,17 +314,35 @@
 	                                <div class="box-header">
 	                                    <h3 class="box-title">Información del proyecto</h3>
 	                                </div><!-- /.box-header -->	   
-	                                    <div class="box-body">                         	
+	                                    <div class="box-body">  
+	                                    	{% if validacion == 1 %}
+							                	<div class="alert alert-danger alert-dismissable">
+							                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							                        <b>Alerta!</b> Datos obligatorios requeridos.
+							                    </div>
+							                {% endif %} 
+							                {% if validacion == 2 %}
+							                	<div class="alert alert-danger alert-dismissable">
+							                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							                        <b>Alerta!</b> El nombre del proyecto ya existe.
+							                    </div>
+							                {% endif %} 
+							                {% if validacion == 3 %}
+							                	<div class="alert alert-danger alert-dismissable">
+							                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							                        <b>Alerta!</b> Datos obligatorios requeridos.
+							                    </div>
+							                {% endif %}                         	
 	                                    	<div class="form-group">
-	                                    		<label>Nombre</label>
+	                                    		<label>Nombre *</label>
 						                        <input type="text" name="nombreProyecto" id="id_nombreProyecto" class="form-control" placeholder="nombre" value="{{proyecto.nombreProyecto}}"/>
 						                    </div>
 						                    <div class="form-group">
-						                    	<label>Fecha inicio</label>
+						                    	<label>Fecha inicio *</label>
 						                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" placeholder="fecha" value="{{proyecto.fechaInicio|date:"Y-m-d"}}"/>
 						                    </div>
 						                    <div class="form-group">
-						                    	<label>Descripción</label>
+						                    	<label>Descripción *</label>
 						                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción">{{proyecto.descripcion}}</textarea>
 						                    </div>
 						                    <div class="form-group">

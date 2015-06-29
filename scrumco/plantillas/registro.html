@@ -24,6 +24,24 @@
             <div class="header">Registro de nuevo usuario</div>
             <form action="" method="post">{% csrf_token %}
                 <div class="body bg-gray">
+                	{% if validacion == 1 %}
+	                	<div class="alert alert-danger alert-dismissable">
+	                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                        <b>Alerta!</b> El usuario ya existe.
+	                    </div>
+	                {% endif %}
+	                {% if validacion == 2 %}
+	                	<div class="alert alert-danger alert-dismissable">
+	                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                        <b>Alerta!</b> Contraseñas no coinciden.
+	                    </div>
+	                {% endif %}
+	                {% if validacion == 3 %}
+	                	<div class="alert alert-danger alert-dismissable">
+	                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	                        <b>Alerta!</b> Empresa ya existe.
+	                    </div>
+	                {% endif %}
                     <div class="form-group">
                         <input type="text" name="username" id="username" class="form-control" placeholder="Usuario"/>
                     </div>

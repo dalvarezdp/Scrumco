@@ -338,7 +338,7 @@
 	                            {% if historias %}
 	                            <div class="box">	                            
 	                                <div class="box-header">
-	                                    <h3 class="box-title">Historias del proyecto</h3>
+	                                    <h3 class="box-title">Historias del proyecto *</h3>
 	                                    
 	                                </div><!-- /.box-header -->
 	                                <div class="box-body table-responsive no-padding">
@@ -375,26 +375,38 @@
 	                                <div class="box-header">
 	                                    <h3 class="box-title">Información del sprint</h3>
 	                                </div><!-- /.box-header -->	   
-	                                    <div class="box-body">                         	
+	                                    <div class="box-body">   
+	                                    	{% if validacion == 1 %}
+							                	<div class="alert alert-danger alert-dismissable">
+							                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							                        <b>Alerta!</b> Los campos obligatorios no pueden estar vacíos.
+							                    </div>
+							                {% endif %} 
+							                {% if validacion == 2 %}
+							                	<div class="alert alert-danger alert-dismissable">
+							                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+							                        <b>Alerta!</b> El nombre del sprint existe.
+							                    </div>
+							                {% endif %}                       	
 	                                    	<div class="form-group">
-	                                    		<label>Nombre</label>
-						                        <input type="text" name="nombre" id="nombre" class="form-control" placeholder="nombre"/>
+	                                    		<label>Nombre *</label>
+						                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{nombreSprint}}" placeholder="nombre"/>
 						                    </div>
 						                    <div class="form-group">
-						                    	<label>Objetivo</label>
-						                    	<textarea class="form-control" name="Objetivo" id="Objetivo" rows="3" placeholder="Objetivo"></textarea>
+						                    	<label>Objetivo *</label>
+						                    	<textarea class="form-control" name="Objetivo" id="Objetivo" rows="3" placeholder="Objetivo">{{objetivo}}</textarea>
 						                    </div>
 						                    <div class="row">
 											  <div class="col-xs-6">
 												  <div class="form-group">
-							                    	<label>Fecha inicio</label>
-							                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" placeholder="fecha"/>						                    	
+							                    	<label>Fecha inicio *</label>
+							                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" value="{{fechaInicio|date:"Y-m-d"}}" placeholder="fecha"/>						                    	
 							                  	  </div>
 							                  </div>
 											  <div class="col-xs-6">
 												<div class="form-group">
-							                    	<label>Fecha Revisión</label>
-							                        <input type="date" name="fechaRevision" id="fechaRevision" class="form-control" placeholder="fecha"/>
+							                    	<label>Fecha Revisión *</label>
+							                        <input type="date" name="fechaRevision" id="fechaRevision" class="form-control" value="{{fechaRevision|date:"Y-m-d"}}" placeholder="fecha"/>
 							                    </div>	
 											  </div>
 											</div>
@@ -403,26 +415,14 @@
 												<div class="form-group">
 												    <label for="disabledTextInput">Duración</label>
 												    <select class="form-control" name="duracion" id="duracion">
-												    	<option value="1">1 semana</option>		
-												    	<option value="2">2 semana</option>		
-												    	<option value="3">3 semana</option>		
-												    	<option value="4">4 semana</option>			  
+												    	<option value="1" {% if duracion == "1" %}selected{% endif %}>1 semana</option>		
+												    	<option value="2" {% if duracion == "2" %}selected{% endif %}>2 semana</option>		
+												    	<option value="3" {% if duracion == "3" %}selected{% endif %}>3 semana</option>		
+												    	<option value="4" {% if duracion == "4" %}selected{% endif %}>4 semana</option>		  
 													</select>
 												</div>
 							                  </div>
-											  <div class="col-xs-6">
-											  	
-
-												<div class="form-group">
-													<br />
-													<div class="checkbox">
-				                                        <label>
-				                                            <input type="checkbox" name="finSemana" id="finSemana" value="1"/>
-				                                            Fines de semana
-				                                        </label>
-			                                    	</div>
-			                                    </div>	
-											  </div>
+											 
 											</div>
 	                                    </div><!-- /.box-body -->
 	                                    {% if historias %}	

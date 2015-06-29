@@ -283,7 +283,47 @@
 						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.id %}'>{{dato.nombreProyecto|capfirst}} - {{dato.fechaInicio|date:"j F, Y"}}</a></h3>					    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
+
+						    <div class="row">
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Descripcion:</dt>
+		                                        <dd>{{dato.descripcion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Equipo:</dt>
+		                                        {% for equipo in equipos %}
+		                                        	{% if equipo.proyecto_id == dato.id %}
+		                                        		<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}}</dd>
+		                                        	{% endif %}
+		                                        {% endfor %}
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                	<dl class="dl-horizontal">
+		                                        <dt>Foco: </dt>
+		                                        <dd>{{dato.foco}}</dd>
+		                                        <dt>Story Point: </dt>
+		                                        <dd>{{dato.spProyecto}}</dd>
+		                                        <dt>Historias: </dt>
+		                                        <dd>{{dato.historiasP}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                     </div>
 						  </div>
 						</div>
 					{% empty %}
@@ -296,7 +336,46 @@
 						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.id %}'>{{dato.proyecto.nombreProyecto|capfirst}} - {{dato.proyecto.fechaInicio|date:"j F, Y"}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.proyecto.descripcion|capfirst}}
+						    <div class="row">
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Descripcion:</dt>
+		                                        <dd>{{dato.proyecto.descripcion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Equipo:</dt>
+		                                        {% for equipo in equipos %}
+		                                        	{% if equipo.proyecto_id == dato.proyecto.id %}
+		                                        		<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}}</dd>
+		                                        	{% endif %}
+		                                        {% endfor %}
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                	<dl class="dl-horizontal">
+		                                        <dt>Foco: </dt>
+		                                        <dd>{{dato.proyecto.foco}}</dd>
+		                                        <dt>Story Point: </dt>
+		                                        <dd>{{dato.proyecto.spProyecto}}</dd>
+		                                        <dt>Historias: </dt>
+		                                        <dd>{{dato.proyecto.historiasP}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                     </div>
 						  </div>
 						</div>
 					{% empty %}

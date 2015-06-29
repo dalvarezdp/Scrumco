@@ -14,6 +14,14 @@ class UserForm(forms.Form):
         last_name = forms.CharField(label='Apellidos', max_length=100)
         email = forms.EmailField(label='Email')
         telefono = forms.NumberInput()
+        
+    def clean_clave(self):
+        cleaned_data = super(UserForm, self).clean()
+        clave = cleaned_data.get('password1')
+        clave2 = cleaned_data.get('password2')
+        self.add_error('password1','Las contrasenas son diferentes')
+        if clave != clave2: 
+            self.add_error('password1','Las contrasenas son diferentes')
 
 
         

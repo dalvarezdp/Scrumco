@@ -307,7 +307,42 @@
 						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
+						  	<div class="row">
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Descripcion:</dt>
+		                                        <dd>{{dato.descripcion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Criterio de aceptación:</dt>
+		                                        <dd>{{dato.aceptacion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                	<dl class="dl-horizontal">
+		                                        <dt>Prioridad: </dt>
+		                                        <dd>{{dato.prioridad}}</dd>
+		                                        <dt>Story Point: </dt>
+		                                        <dd>{{dato.sp}}</dd>
+		                                        <dt>Creado por:  </dt>
+		                                        <dd>{{dato.creador.first_name}} {{dato.creador.last_name}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                     </div>
 						  </div>
 						</div>
 					{% empty %}
@@ -320,7 +355,42 @@
 						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.descripcion|capfirst}}
+						    <div class="row">
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Descripcion:</dt>
+		                                        <dd>{{dato.descripcion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Criterio de aceptación:</dt>
+		                                        <dd>{{dato.aceptacion|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                	<dl class="dl-horizontal">
+		                                        <dt>Prioridad: </dt>
+		                                        <dd>{{dato.prioridad}}</dd>
+		                                        <dt>Story Point: </dt>
+		                                        <dd>{{dato.sp}}</dd>
+		                                        <dt>Creado por:  </dt>
+		                                        <dd>{{dato.creador.first_name}} {{dato.creador.last_name}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                     </div>
 						  </div>
 						</div>
 					{% empty %}

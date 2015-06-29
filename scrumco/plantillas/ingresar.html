@@ -25,6 +25,12 @@
             <form action="" method="post" action="">
             	{% csrf_token %}
                 <div class="body bg-gray">
+                	{% if validacion == 1 %}
+                	<div class="alert alert-danger alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <b>Alerta!</b> Usuario no registrado o contraseña incorrecta.
+                    </div>
+                    {% endif %}
                     <div class="form-group">
                         <input type="text" name="username" id="id_username" class="form-control" placeholder="Usuario"/>
                     </div>

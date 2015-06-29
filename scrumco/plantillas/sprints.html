@@ -305,10 +305,37 @@
                                 <a href='{% url 'principal.views.cerrar_sprint' dato.id %}'><i class="fa fa-trash-o"></i></a>
                                             				  	 	
 						  	</div>
-						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_sprintbacklog' dato.id %}'>{{dato.nombre|capfirst}}</a></h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_sprintbacklog' dato.id %}'>{{dato.nombre|capfirst}} - {{dato.fechaInicio|date:"j F, Y"}}/{{dato.fechaFin|date:"j F, Y"}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
-						    {{dato.Objetivo|capfirst}}
+						  	<div class="navbar-right">
+						  	 		
+                                <p style="font-weight: bold;"> </p>
+                                            				  	 	
+						  	</div>
+						    <div class="row">
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Objetivo:</dt>
+		                                        <dd>{{dato.Objetivo|capfirst}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                        <div class="col-md-4">
+		                            <div class="box box-solid">
+		                                <div class="box-body">
+		                                    <dl>
+		                                        <dt>Fecha Revisión: </dt>
+		                                        <dd>{{dato.fechaRevision|date:"j F, Y"}}</dd>
+		                                    </dl>
+		                                </div><!-- /.box-body -->
+		                            </div><!-- /.box -->
+		                        </div><!-- ./col -->
+		                     
+		                     </div>
 						  </div>
 						</div>
 					{% empty %}

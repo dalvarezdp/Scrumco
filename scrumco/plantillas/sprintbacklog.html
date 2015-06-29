@@ -5,7 +5,7 @@
 {% block style_css %}{% endblock %}
 
 {% block script %}
-			
+				
 
 {% endblock %}
 
@@ -409,6 +409,7 @@
 			{% endfor %}
 
 			{% for historia in historias %}
+			
 
 				<div class="modal fade" id="exampleModal{{historia.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 				    <div class="modal-dialog">
@@ -418,9 +419,21 @@
 					          <h4 class="modal-title" id="gridSystemModalLabel">Nueva Tarea</h4>
 				        </div>
 				        <div class="modal-body">
-				        	<form action="{% url 'principal.views.nueva_tarea_modal' proyecto.id historia.id%}" method="post">{% csrf_token %}
+				        	<form action="{% url 'principal.views.nueva_tarea_modal' proyecto.id historia.id%}" method="post" id="nuevatarea">{% csrf_token %}
 					          <div class="container-fluid">
 					            <div class="row">
+				            	{% if validacion == 1 %}
+				                	<div class="alert alert-danger alert-dismissable">
+				                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				                        <b>Alerta!</b> Los campos no pueden estar vacíos.
+				                    </div>
+				                {% endif %} 
+				                {% if validacion == 2 %}
+				                	<div class="alert alert-danger alert-dismissable">
+				                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+				                        <b>Alerta!</b> El esfuerzo debe de ser un número entero.
+				                    </div>
+				                {% endif %} 
 					              <div class="form-group">
 		                    		<label>Resumen</label>
 			                        <input type="text" name="resumen" id="resumen" class="form-control" placeholder="Resumen"/>
@@ -487,7 +500,7 @@
 		                                {% endif %}  
 		                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
 		                                {% if dato.realizador%}
-                                			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
+                                			<td><a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
                                 		{% else %}
 											<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
 										{% endif %} 
