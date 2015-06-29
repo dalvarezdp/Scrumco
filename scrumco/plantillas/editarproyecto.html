@@ -370,10 +370,10 @@
 							                        		
 									                        	{% if not dato.usuario.first_name %}
 									                        		
-																	<option value="{{dato.id}}" {% if dato.id == dato2.id %}selected{% endif %}>{{dato.usuario.username|capfirst}}</option>
+																	<option value="{{dato.id}}">{{dato.usuario.username|capfirst}}</option>
 																	
 																{% else %}
-																	<option value="{{dato.id}}" {% if dato.id == dato2.id %}selected{% endif %}>{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
+																	<option value="{{dato.id}}">{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}</option>
 																{% endif %}													
 													{% empty %}
 															

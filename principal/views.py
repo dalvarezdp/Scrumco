@@ -289,6 +289,45 @@ def lista_proyectos(request):
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
+    
+@login_required(login_url='/ingresar')
+def asignar_rol(request,id_proyecto,id_equipo,id_rol):
+    usuario=request.user
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            proyectos=Proyecto.objects.filter(jefeProyecto=personal.id)
+            equipos=Equipo.objects.all()
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyectos=Equipo.objects.filter(miembro=personal.id)
+            equipos=Equipo.objects.all()
+          
+        if id_rol=='1':  
+            e = Equipo.objects.filter(proyecto_id=id_proyecto).get(pk=id_equipo)
+            e.scrummaster=1
+            e.teammember=0
+            e.productowner=0
+            e.save()
+        if id_rol=='2':  
+            e = Equipo.objects.filter(proyecto_id=id_proyecto).get(pk=id_equipo)
+            e.scrummaster=0
+            e.teammember=1
+            e.productowner=0
+            e.save()
+        if id_rol=='3':  
+            e = Equipo.objects.filter(proyecto_id=id_proyecto).get(pk=id_equipo)
+            e.scrummaster=0
+            e.teammember=0
+            e.productowner=1
+            e.save()
+            
+        
+    if usuario.is_authenticated():
+        return render_to_response('proyectos.html',{'equipos':equipos,'personal':personal, 'proyectos':proyectos}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
 
 @login_required(login_url='/ingresar')    
 def nuevo_proyecto(request):
