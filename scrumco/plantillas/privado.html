@@ -264,6 +264,152 @@
 {% endblock %}
 
 {% block contenido %}
+				<div class="row">
+                        <div class="col-md-12">
+                            <!-- Danger box -->
+                            <div class="box box-solid box-danger">
+                                <div class="box-header">
+                                    <h3 class="box-title">Tus Tareas</h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-danger btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    {% if tareas %}
+						
+									    <div class="panel panel-default">
+										  <!-- Default panel contents -->
+										 
+										  <div class="box-body table-responsive no-padding">
+				                          	<table class="table table-hover">
+				                              <tr>
+				                              	<th>ID</th>
+				                              	<th>Historia</th>
+				                                <th>Resumen</th>
+				                                <th>Descripción</th>
+				                                <th>Estado</th>
+				                                <th>Esfuerzo</th>
+				                              </tr>
+						                    {% for dato in tareas %}
+						                              <tr>
+						                                <td>{{dato.id}}</td>
+						                                <td>{{dato.historia.titulo|capfirst}}</td>
+						                                <td>{{dato.resumen|capfirst}}</td>
+						                                <td>{{dato.descripcion|capfirst}}</td>
+						                                {% if dato.estado = 0 %}
+						                                	<td><span class="label label-warning">Pendiente</span></td>
+						                                {% elif dato.estado = 1 %}
+						                                	<td><span class="label label-primary">Trabajando</span></td>  
+						                                {% else %}
+						                                	<td><span class="label label-success">Hecho</span></td> 
+						                                {% endif %}  
+						                                <td>{{dato.esfuerzo|capfirst}} Horas</td>                     
+						                              </tr>						  
+											{% endfor %}
+				                            </table>
+				                          </div><!-- /.box-body -->
+										</div>						
+									
+								{% else %}
+										<div class="alert alert-warning" role="alert">No tienes ninguna tarea asignada.</div>							  
+				
+								{% endif %}
+				                  </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                        </div><!-- /.col -->
 
+                        <div class="col-md-12">
+                            <!-- Success box -->
+                            <div class="box box-solid box-success">
+                                <div class="box-header">
+                                    <h3 class="box-title">Tus Proyectos</h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    {% if proyectos %}
+										
+									    <div class="panel panel-default">
+										  <!-- Default panel contents -->
+			
+										  <div class="box-body table-responsive no-padding">
+				                          	<table class="table table-hover">
+				                              <tr>
+				                              	<th>ID</th>
+				                                <th>Nombre</th>
+				                                <th>Fecha Inicio</th>
+				                                <th>Descripción</th>
+				                                <th>Foco</th>
+				                                <th>Historias</th>
+				                                <th>SP</th>
+				                              </tr>
+						                    {% for dato in proyectos %}
+						                              <tr>
+						                                <td>{{dato.proyecto.id}}</td>
+						                                <td>{{dato.proyecto.nombreProyecto|capfirst}}</td>
+						                                <td>{{dato.proyecto.fechaInicio|date:"j F, Y"}}</td> 
+						                                <td>{{dato.proyecto.descripcion|capfirst}}</td>   
+						                                <td>{{dato.proyecto.foco|capfirst}}</td>  
+						                                <td>{{dato.proyecto.historiasP|capfirst}}</td>  
+						                                <td>{{dato.proyecto.spProyecto|capfirst}}</td>                   
+						                              </tr>						  
+											{% endfor %}
+				                            </table>
+				                          </div><!-- /.box-body -->
+										</div>						
+									
+								{% else %}
+										<div class="alert alert-warning" role="alert">No tienes ningún proyecto asignado.</div>							  
+				
+								{% endif %}
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                        </div><!-- /.col -->
+
+                        <div class="col-md-12">
+                            <!-- Warning box -->
+                            <div class="box box-solid box-warning">
+                                <div class="box-header">
+                                    <h3 class="box-title">Estimaciones Poker</h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-warning btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                        
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    {% if historias %}
+						
+									    <div class="panel panel-default">
+										  <!-- Default panel contents -->
+										  <div class="box-body table-responsive no-padding">
+				                          	<table class="table table-hover">
+				                              <tr>
+				                              	<th>Proyecto</th>
+				                                <th>Sprint</th>
+				                                <th>Historia</th>
+				                                <th>Estado</th>
+				                              </tr>
+						                    {% for dato in historias %}
+						                              <tr>
+						                                <td>{{dato.proyecto.nombreProyecto|capfirst}}</td>
+						                                <td>{{dato.sprint.nombre|capfirst}}</td>
+						                                <td>{{dato.titulo|capfirst}}</td>
+						                                <td><span class="label label-warning">Pendiente</span></td>                        
+						                              </tr>						  
+											{% endfor %}
+				                            </table>
+				                          </div><!-- /.box-body -->
+										</div>						
+									
+								{% else %}
+										<div class="alert alert-warning" role="alert">No hay ninguna historia pendiente para estimar.</div>							  
+				
+								{% endif %}
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
 
 {% endblock %}                        

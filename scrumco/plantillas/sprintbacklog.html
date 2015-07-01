@@ -363,6 +363,7 @@
 				          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 				          <button type="submit" class="btn btn-primary">Si</button>
 				        </div>
+				        </form>
 				    </div>
 				  </div>
 				</div>
@@ -500,7 +501,7 @@
 		                                {% endif %}  
 		                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
 		                                {% if dato.realizador%}
-                                			<td><a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
+                                			<td>{% if dato.realizador.miembro.usuario.id == personal.usuario.id %}<a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'>{% endif%}<small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
                                 		{% else %}
 											<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
 										{% endif %} 

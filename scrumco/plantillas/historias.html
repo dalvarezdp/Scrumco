@@ -285,7 +285,7 @@
                         Historias
                     </h1>
                     <ol class="breadcrumb">
-                    	{% if personal.usuario.is_superuser %}
+                    	{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
                         	<li><a href="{% url 'principal.views.nueva_historia' proyecto.id %}"><i class="fa fa-plus"></i> Nueva historia</a></li>
                         {% endif %} 
                     </ol>
@@ -294,7 +294,7 @@
 
 {% block contenido %}
 
-				{% if personal.usuario.is_superuser %}
+				{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
 					{% for dato in historias %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
@@ -352,7 +352,7 @@
 					{% for dato in historias %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.detalle_historia' dato.id %}'>{{dato.titulo|capfirst}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
 						    <div class="row">

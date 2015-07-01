@@ -342,7 +342,7 @@
 					{% for dato in proyectos %}
 						<div class="panel panel-success">
 						  <div class="panel-heading">
-						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.id %}'>{{dato.proyecto.nombreProyecto|capfirst}} - {{dato.proyecto.fechaInicio|date:"j F, Y"}}</a></h3>						    
+						    <h3 class="panel-title"><a href='{% url 'principal.views.lista_historias' dato.proyecto.id %}'>{{dato.proyecto.nombreProyecto|capfirst}} - {{dato.proyecto.fechaInicio|date:"j F, Y"}}</a></h3>						    
 						  </div>
 						  <div class="panel-body">
 						    <div class="row">
@@ -363,7 +363,16 @@
 		                                        <dt>Equipo:</dt>
 		                                        {% for equipo in equipos %}
 		                                        	{% if equipo.proyecto_id == dato.proyecto.id %}
-		                                        		<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}}</dd>
+		                                        		{% if equipo.scrummaster %}
+		                                        		
+		                                        			<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}} <small class="label label-success">Scrum Master</small> </dd>
+						                        		{% endif %}
+						                        		{% if equipo.teammember %}
+						                        			<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}} <small class="label label-success">Team Member</small> </dd>
+						                        		{% endif %}
+						                        		{% if equipo.productowner %}
+						                        			<dd>{{equipo.miembro.usuario.first_name|capfirst}} {{equipo.miembro.usuario.last_name|capfirst}} <small class="label label-success">Product Owner</small> </dd>
+						                        		{% endif %}
 		                                        	{% endif %}
 		                                        {% endfor %}
 		                                    </dl>

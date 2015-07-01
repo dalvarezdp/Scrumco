@@ -407,6 +407,7 @@
 						                                <th>Resumen</th>
 						                                <th>Descripción</th>
 						                                <th>Estado</th>
+						                                <th>Esfuerzo</th>
 						                              </tr>
 								                    {% for dato2 in tareas %}
 								                    	{% if dato.id = dato2.historia_id %}
@@ -420,7 +421,8 @@
 								                                	<td><span class="label label-primary">Trabajando</span></td>  
 								                                {% else %}
 								                                	<td><span class="label label-success">Hecho</span></td> 
-								                                {% endif %}                              
+								                                {% endif %} 
+								                                <td>{{dato2.esfuerzo|capfirst}} Horas</td>                             
 								                              </tr>						  
 								                        {% endif %}
 													{% endfor %}

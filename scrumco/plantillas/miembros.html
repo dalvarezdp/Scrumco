@@ -344,12 +344,11 @@
 		                             <div class="icon">
 		                                 <i class="ion ion-person-add"></i>
 		                             </div>
-		                             <a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
-	                                    Editar <i class="fa fa-edit"></i>
-	                                </a>
-	                                <a href='{% url 'principal.views.eliminar_miembro' dato.usuario.id %}' class="small-box-footer">
-	                                    Eliminar <i class="fa fa-trash-o"></i>
-	                                </a>
+		                             {% if dato.usuario.id == personal.usuario.id %}
+										<a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
+		                                    Editar <i class="fa fa-edit"></i>
+		                                </a>
+									 {% endif %}	                             
 		                        </div>
 		                   </div><!-- ./col --> 
 						{% empty %}
