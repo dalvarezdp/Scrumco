@@ -36,7 +36,7 @@ class Proyecto(models.Model):
         return str(self.nombreProyecto)
     
 class Sprint(models.Model):
-    nombre = models.CharField(max_length=100, unique=True)
+    nombre = models.CharField(max_length=100, unique=False)
     Objetivo = models.TextField()
     fechaInicio = models.DateField(db_index=False, auto_now_add=False)
     duracion = models.IntegerField(blank="true", null="true")
@@ -47,6 +47,8 @@ class Sprint(models.Model):
     nTareas = models.IntegerField(blank="true", null="true")
     hEstimadas = models.IntegerField(blank="true", null="true")
     hPendientes = models.IntegerField(blank="true", null="true")
+    velocidadOb = models.IntegerField(blank="true", null="true")
+    velocidadReal = models.IntegerField(blank="true", null="true")
     proyecto = models.ForeignKey(Proyecto)
     def __unicode__(self):
         return str(self.proyecto)
@@ -65,7 +67,7 @@ class Equipo(models.Model):
     
 
 class Historia(models.Model):
-    titulo = models.CharField(max_length=100, unique=True)
+    titulo = models.CharField(max_length=100, unique=False)
     prioridad = models.IntegerField(blank="true", null="true")
     sp = models.IntegerField(blank="true", null="true")
     descripcion = models.TextField()

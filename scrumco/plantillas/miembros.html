@@ -328,32 +328,43 @@
 	                        </div>
 	                    </div>
                         {% endif %} 
-                        {% for dato in miembros %}
-                        	<div class="col-lg-3 col-xs-6">
-                            	<!-- small box -->
-								<div class="small-box bg-yellow">
-		                             <div class="inner">
-		                                   
-		                                <h3>
-											{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}			
-		                                </h3>
-		                                <p>
-											{{dato.usuario.email|capfirst}}
-		                                </p>
-		                             </div>
-		                             <div class="icon">
-		                                 <i class="ion ion-person-add"></i>
-		                             </div>
-		                             {% if dato.usuario.id == personal.usuario.id %}
-										<a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
-		                                    Editar <i class="fa fa-edit"></i>
-		                                </a>
-									 {% endif %}	                             
-		                        </div>
-		                   </div><!-- ./col --> 
-						{% empty %}
-								
-						{% endfor %}                    
+                        
+	                        {% for dato in miembros %}
+	                        	<div class="col-lg-3 col-xs-6">
+	                            	<!-- small box -->
+									<div class="small-box bg-yellow">
+			                             <div class="inner">
+			                                   
+			                                <h3>
+												{{dato.usuario.first_name|capfirst}} {{dato.usuario.last_name|capfirst}}			
+			                                </h3>
+			                                <p>
+												{{dato.usuario.email|capfirst}}
+			                                </p>
+			                             </div>
+			                             <div class="icon">
+			                                 <i class="ion ion-person-add"></i>
+			                             </div>
+			                             {% if personal.usuario.is_superuser %}
+			                             	<a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
+			                                    Editar <i class="fa fa-edit"></i>
+			                                </a>
+			                             	<a href='{% url 'principal.views.eliminar_miembro' dato.usuario.id %}' class="small-box-footer">
+			                                    Eliminar <i class="fa fa-trash-o"></i>
+			                                </a>
+			                             {% else %}
+			                             	{% if dato.usuario.id == personal.usuario.id %}
+												<a href='{% url 'principal.views.editar_miembro' dato.usuario.id %}' class="small-box-footer">
+				                                    Editar <i class="fa fa-edit"></i>
+				                                </a>
+										 	{% endif %}
+										 {% endif %}
+			                             	                             
+			                        </div>
+			                   </div><!-- ./col --> 
+							{% empty %}
+									
+							{% endfor %}                
                     </div><!-- /.row -->
 
 {% endblock %}                        

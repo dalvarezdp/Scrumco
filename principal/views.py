@@ -21,20 +21,23 @@ def inicio(request):
     usuario=request.user  
     if usuario.is_authenticated():
         miembro = Miembro.objects.get(usuario=usuario.id)
-        equipo = Equipo.objects.get(miembro=miembro.id)
-        proyectos = Equipo.objects.filter(miembro=miembro.id)
-        vproyectos = Equipo.objects.filter(miembro=miembro.id).values('proyecto_id').distinct()
-        historias = Historia.objects.filter(proyecto__in=vproyectos).exclude(sprint_id=None)
-        votospoker= Poker.objects.filter(jugador=equipo.id).filter(historia__in=historias)
-        pendientespoker = historias.exclude(id__in=votospoker.values('historia_id'))
-        tareas = Tarea.objects.filter(realizador=equipo.id).order_by('estado')
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             
-        
-          
+        try:
+            equipo = Equipo.objects.get(miembro=miembro.id)
+            proyectos = Equipo.objects.filter(miembro=miembro.id)
+            vproyectos = Equipo.objects.filter(miembro=miembro.id).values('proyecto_id').distinct()
+            historias = Historia.objects.filter(proyecto__in=vproyectos).exclude(sprint_id=None)
+            votospoker= Poker.objects.filter(jugador=equipo.id).filter(historia__in=historias)
+            pendientespoker = historias.exclude(id__in=votospoker.values('historia_id'))
+            tareas = Tarea.objects.filter(realizador=equipo.id).order_by('estado')
+        except:
+            print "no hay datos de usuario"
+            return render_to_response('privado.html',{'personal':personal}, context_instance=RequestContext(request))
+
     if usuario.is_authenticated():
         return render_to_response('privado.html',{'historias':pendientespoker,'tareas':tareas,'proyectos':proyectos,'personal':personal}, context_instance=RequestContext(request))
     else:
@@ -771,7 +774,38 @@ def lista_sprints(request, id_proyecto):
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-          
+        
+        horasEstimadas=0
+        horasTerminadas=0
+        velocidadOb=0
+        velocidadReal=0
+        for sprint in sprints: 
+            historias = Historia.objects.filter(sprint_id=sprint.id)
+            tareas = Tarea.objects.filter(historia__in=historias)
+            tareasTerminadas = Tarea.objects.filter(historia__in=historias).filter(estado=2)
+            for historia in historias:
+                t=Tarea.objects.filter(historia=historia)
+                ts = Tarea.objects.filter(historia=historia).filter(estado=2)
+                if (len(t) == len(ts)) and len(t) != 0 and len(ts) != 0:
+                    velocidadReal += historia.sp
+                velocidadOb += historia.sp
+            for tarea in tareasTerminadas:
+                horasTerminadas += tarea.esfuerzo
+            for tarea in tareas:
+                horasEstimadas += tarea.esfuerzo
+            s = Sprint.objects.get(id=sprint.id)      
+            s.nTareas = len(tareas)
+            s.velocidadOb = velocidadOb
+            s.velocidadReal = velocidadReal
+            s.hEstimadas = horasEstimadas
+            s.hPendientes = horasEstimadas-horasTerminadas
+            s.save()
+            horasEstimadas=0
+            horasTerminadas=0
+            velocidadOb=0
+            velocidadReal=0
+        
+        
     if usuario.is_authenticated():
         return render_to_response('sprints.html', {'equipo':equipo,'personal':personal, 'sprints':sprints, 'proyecto':proyecto}, context_instance=RequestContext(request))
     else:
@@ -839,7 +873,7 @@ def nuevo_sprint(request, id_proyecto):
             except:
                 #try:   
                     
-                    fechaFin = fechaInicio + timedelta(days=(7*(int(duracion))))                   
+                    fechaFin = fechaInicio + timedelta(days=((7*(int(duracion)))))                   
                     p=formulario.save(commit=False)
                     p.fechaFin = fechaFin
                     p.estado = 1
@@ -903,7 +937,7 @@ def editar_sprint(request, id_sprint):
 
         historiasSelectSprint = request.POST.getlist('historiasSprint')
         
-        
+        print duracion
         for dato in equipo:
             dedicaciones.append(request.POST['foco_'+str(dato.id)])  
 
@@ -925,7 +959,6 @@ def editar_sprint(request, id_sprint):
             try:    
 
                 existe = Sprint.objects.get(nombre=nombreSprint)
-
                 fechaInicio = datetime.strptime(fechaInicio,'%Y-%m-%d')
                 fechaRevision = datetime.strptime(fechaRevision,'%Y-%m-%d')     
      
@@ -933,7 +966,17 @@ def editar_sprint(request, id_sprint):
                     #el nombre del sprint existe
                     validacion=2
                     return render_to_response('editarsprint.html',{'equipo':equipo,'validacion':validacion,'historiasSprint':historiasSprint,'sprint':sprint,'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
-                else:
+                else:                         
+                    fechaFin = fechaInicio + timedelta(days=((7*(int(duracion))))) 
+                    sprint.nombre=nombreSprint
+                    sprint.fechaInicio=fechaInicio
+                    sprint.fechaFin=fechaFin
+                    sprint.fechaRevision=fechaRevision
+                    sprint.Objetivo=objetivo
+                    sprint.duracion=duracion
+                    sprint.estado = 1
+                    sprint.save()
+                    
                     #Agrego al equipo la dedicacion y el sprint
                     for i in range(len(equipo)):
                         equipo[i].dedicacion = dedicaciones[i]
@@ -959,7 +1002,8 @@ def editar_sprint(request, id_sprint):
                 #try:  
                     fechaInicio = datetime.strptime(fechaInicio,'%Y-%m-%d')
                     fechaRevision = datetime.strptime(fechaRevision,'%Y-%m-%d')                          
-                    fechaFin = fechaInicio + timedelta(days=(7*(int(duracion)))) 
+                    fechaFin = fechaInicio + timedelta(days=((7*(int(duracion))))) 
+                    print fechaFin
                     sprint.nombre=nombreSprint
                     sprint.fechaInicio=fechaInicio
                     sprint.fechaFin=fechaFin
