@@ -409,119 +409,132 @@
 				  </div><!-- /.modal -->
 			{% endfor %}
 
-			{% for historia in historias %}
-			
+			{% if historias %}
 
-				<div class="modal fade" id="exampleModal{{historia.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				    <div class="modal-dialog">
-					  <div class="modal-content">
-				        <div class="modal-header">
-				          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					          <h4 class="modal-title" id="gridSystemModalLabel">Nueva Tarea</h4>
-				        </div>
-				        <div class="modal-body">
-				        	<form action="{% url 'principal.views.nueva_tarea_modal' proyecto.id historia.id%}" method="post" id="nuevatarea">{% csrf_token %}
-					          <div class="container-fluid">
-					            <div class="row">
-				            	{% if validacion == 1 %}
-				                	<div class="alert alert-danger alert-dismissable">
-				                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				                        <b>Alerta!</b> Los campos no pueden estar vacíos.
-				                    </div>
-				                {% endif %} 
-				                {% if validacion == 2 %}
-				                	<div class="alert alert-danger alert-dismissable">
-				                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				                        <b>Alerta!</b> El esfuerzo debe de ser un número entero.
-				                    </div>
-				                {% endif %} 
-					              <div class="form-group">
-		                    		<label>Resumen</label>
-			                        <input type="text" name="resumen" id="resumen" class="form-control" placeholder="Resumen"/>
-			                      </div>
-					            </div>
-					            <div class="row">
-					              <div class="form-group">
-			                    	<label>Descripción</label>
-			                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción"></textarea>
-			                      </div>
-					            </div>	
-					            <div class="row">
-						            <div class="form-group">
-	                            		<label>Esfuerzo estimado (Horas)</label>
-				                        <input type="text" name="esfuerzo" id="esfuerzo" class="form-control" placeholder="Esfuerzo"/>
-				                    </div>	
-			                    </div>	        
-					          </div>
-					        
-				        </div>
-				        <div class="modal-footer">
-				          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				          <button type="submit" class="btn btn-primary">Añadir Tarea</button>
-				        </div>
-				        </form>
-				      </div><!-- /.modal-content -->
-				    </div><!-- /.modal-dialog -->
-				  </div><!-- /.modal -->
-			
-				{% if tareas %}
+				{% for historia in historias %}
+				
+	
+					<div class="modal fade" id="exampleModal{{historia.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					    <div class="modal-dialog">
+						  <div class="modal-content">
+					        <div class="modal-header">
+					          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						          <h4 class="modal-title" id="gridSystemModalLabel">Nueva Tarea</h4>
+					        </div>
+					        <div class="modal-body">
+					        	<form action="{% url 'principal.views.nueva_tarea_modal' proyecto.id historia.id%}" method="post" id="nuevatarea">{% csrf_token %}
+						          <div class="container-fluid">
+						            <div class="row">
+					            	{% if validacion == 1 %}
+					                	<div class="alert alert-danger alert-dismissable">
+					                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					                        <b>Alerta!</b> Los campos no pueden estar vacíos.
+					                    </div>
+					                {% endif %} 
+					                {% if validacion == 2 %}
+					                	<div class="alert alert-danger alert-dismissable">
+					                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					                        <b>Alerta!</b> El esfuerzo debe de ser un número entero.
+					                    </div>
+					                {% endif %} 
+						              <div class="form-group">
+			                    		<label>Resumen</label>
+				                        <input type="text" name="resumen" id="resumen" class="form-control" placeholder="Resumen"/>
+				                      </div>
+						            </div>
+						            <div class="row">
+						              <div class="form-group">
+				                    	<label>Descripción</label>
+				                    	<textarea class="form-control" name="descripcion" id="descripcion" rows="3" placeholder="Descripción"></textarea>
+				                      </div>
+						            </div>	
+						            <div class="row">
+							            <div class="form-group">
+		                            		<label>Esfuerzo estimado (Horas)</label>
+					                        <input type="text" name="esfuerzo" id="esfuerzo" class="form-control" placeholder="Esfuerzo"/>
+					                    </div>	
+				                    </div>	        
+						          </div>
+						        
+					        </div>
+					        <div class="modal-footer">
+					          <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					          <button type="submit" class="btn btn-primary">Añadir Tarea</button>
+					        </div>
+					        </form>
+					      </div><!-- /.modal-content -->
+					    </div><!-- /.modal-dialog -->
+					  </div><!-- /.modal -->
+				
+					{% if historia %}
+							<div class="panel panel-default">
+							  <!-- Default panel contents -->
+							  <div class="panel-heading">{{historia.titulo|capfirst}}
+							  	<div class="navbar-right">
+	                    			<ul class="nav navbar-nav">
+										
+							  	 		<a href="" data-toggle="modal" data-target="#exampleModal{{historia.id}}"><i class="fa fa-plus"></i> Añadir tarea</a>
+							  	 	</ul>
+							  	</div>
+							  </div>
+							  <div class="box-body table-responsive no-padding">
+
+					{% if tareas %}
+							
+						    	<table class="table table-hover">
+	                              <tr>
+	                              	<th>ID</th>
+	                                <th>Resumen</th>
+	                                <th>Descripción</th>
+	                                <th>Estado</th>
+	                                <th>Esfuerzo</th>
+	                                <th>Realizador</th>
+	                              </tr>
+			                    {% for dato in tareas %}
+			                    	{% if historia.id = dato.historia_id %}
+			                              <tr>
+			                                <td>{{dato.id}}</td>
+			                                <td>{{dato.resumen|capfirst}}</td>
+			                                <td>{{dato.descripcion|capfirst}}</td>
+			                                {% if dato.estado = 0 %}
+			                                	<td><span class="label label-warning">Pendiente</span></td>
+			                                {% elif dato.estado = 1 %}
+			                                	<td><span class="label label-primary">Trabajando</span></td>  
+			                                {% else %}
+			                                	<td><span class="label label-success">Hecho</span></td> 
+			                                {% endif %}  
+			                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
+			                                {% if dato.realizador%}
+	                                			<td>{% if dato.realizador.miembro.usuario.id == personal.usuario.id %}<a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'>{% endif%}<small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
+	                                		{% else %}
+												<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
+											{% endif %} 
+											<td>      
+												<a href="" data-toggle="modal" data-target="#exampleModalEdit{{dato.id}}"><i class="fa fa-edit"></i></a>
+												<!-- Small modal -->
+												<a href="" data-toggle="modal" data-target=".bs-example-modal-sm{{dato.id}}"><i class="fa fa-trash-o"></i></a>
+			                             
+			                                </td>                        
+			                              </tr>						  
+			                        {% endif %}
+								{% endfor %}
+	                            </table>
+	                          </div><!-- /.box-body -->
+							</div>						
 						
-					    <div class="panel panel-default">
-						  <!-- Default panel contents -->
-						  <div class="panel-heading">{{historia.titulo|capfirst}}
-						  	<div class="navbar-right">
-                    			<ul class="nav navbar-nav">
-									
-						  	 		<a href="" data-toggle="modal" data-target="#exampleModal{{historia.id}}"><i class="fa fa-plus"></i> Añadir tarea</a>
-						  	 	</ul>
-						  	</div>
-						  </div>
-						  <div class="box-body table-responsive no-padding">
-                          	<table class="table table-hover">
-                              <tr>
-                              	<th>ID</th>
-                                <th>Resumen</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
-                                <th>Esfuerzo</th>
-                                <th>Realizador</th>
-                              </tr>
-		                    {% for dato in tareas %}
-		                    	{% if historia.id = dato.historia_id %}
-		                              <tr>
-		                                <td>{{dato.id}}</td>
-		                                <td>{{dato.resumen|capfirst}}</td>
-		                                <td>{{dato.descripcion|capfirst}}</td>
-		                                {% if dato.estado = 0 %}
-		                                	<td><span class="label label-warning">Pendiente</span></td>
-		                                {% elif dato.estado = 1 %}
-		                                	<td><span class="label label-primary">Trabajando</span></td>  
-		                                {% else %}
-		                                	<td><span class="label label-success">Hecho</span></td> 
-		                                {% endif %}  
-		                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
-		                                {% if dato.realizador%}
-                                			<td>{% if dato.realizador.miembro.usuario.id == personal.usuario.id %}<a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'>{% endif%}<small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
-                                		{% else %}
-											<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
-										{% endif %} 
-										<td>      
-											<a href="" data-toggle="modal" data-target="#exampleModalEdit{{dato.id}}"><i class="fa fa-edit"></i></a>
-											<!-- Small modal -->
-											<a href="" data-toggle="modal" data-target=".bs-example-modal-sm{{dato.id}}"><i class="fa fa-trash-o"></i></a>
-		                             
-		                                </td>                        
-		                              </tr>						  
-		                        {% endif %}
-							{% endfor %}
-                            </table>
-                          </div><!-- /.box-body -->
-						</div>						
-					
+					{% else %}
+							<div class="alert alert-warning" role="alert">Aún no hay ninguna tarea para esta historia.</div>							  
+	
+					{% endif %}
 				{% else %}
-						<div class="alert alert-warning" role="alert">Aún no hay ninguna tarea para esta historia.</div>							  
+						<div class="alert alert-warning" role="alert">Aún no hay historias en este sprint.</div>							  
 
 				{% endif %}
 			{% endfor %}
+			{% else %}
+						<div class="alert alert-warning" role="alert">Aún no hay historias en este sprint.</div>							  
+
+			{% endif %}
+			
 
 {% endblock %}                        

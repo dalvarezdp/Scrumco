@@ -1179,13 +1179,11 @@ def eliminar_tarea_modal(request, id_tarea):
             personal=Miembro.objects.get(usuario=usuario.id)
             proyecto=Proyecto.objects.get(pk=tarea.proyecto.id)
                            
-            tarea.delete()                   
+        tarea.delete()                   
             
-            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
+        return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
 
-    else:
-        formulario = TareaForm()
-    return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    return render_to_response('registrotarea.html',{'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
 
 
 
