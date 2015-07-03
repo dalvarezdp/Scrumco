@@ -1546,6 +1546,31 @@ def ver_graficas(request, id_sprint):
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
 
+
+@login_required(login_url='/ingresar')    
+def borrar_comentario(request, id_comentario):
+    usuario=request.user
+    comentario=ComentarioReuniones.objects.get(id=id_comentario) 
+
+    if comentario.reunion == 1:
+        comentario.delete()
+        return HttpResponseRedirect(reverse('ver_sprintplanning',args=[comentario.sprint.id]))
+    if comentario.reunion == 2:
+        comentario.delete()
+        return HttpResponseRedirect(reverse('ver_sprintreview',args=[comentario.sprint.id]))
+    if comentario.reunion == 3:
+        comentario.delete()
+        return HttpResponseRedirect(reverse('ver_sprintretrospective',args=[comentario.sprint.id]))
+    if comentario.reunion == 4:
+        comentario.delete()
+        return HttpResponseRedirect(reverse('ver_dailyscrum',args=[comentario.sprint.id]))
+    
+    
+        
+    
+
+
+
 @login_required(login_url='/ingresar')    
 def ver_sprintplanning(request, id_sprint):
     hoy=date.today()

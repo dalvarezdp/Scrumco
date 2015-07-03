@@ -375,7 +375,7 @@
 				                                <li>
 				                                    <i class="fa fa-comments bg-yellow"></i>
 				                                    <div class="timeline-item">
-				                                        <span class="time"><i class="fa fa-clock-o"></i> {{comentario.fechahora|date:"G:i"}}</span>
+				                                        <span class="time"><i class="fa fa-clock-o"></i> {{comentario.fechahora|date:"G:i"}}  <a href='{% url 'principal.views.borrar_comentario' comentario.id %}'><i class="fa fa-trash-o"></i></a></span>
 				                                        <h3 class="timeline-header"><a href="#">{{comentario.persona.miembro.usuario.first_name}} {{comentario.persona.miembro.usuario.last_name}}</a> Reunión diaria</h3>
 				                                        <div class="timeline-body">
 				                                            {{comentario.mensaje}}
