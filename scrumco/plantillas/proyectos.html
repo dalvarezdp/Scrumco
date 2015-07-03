@@ -34,10 +34,10 @@
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header bg-light-blue">
-                                    <img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />
+                                    <img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />
                                     <p>
                                         {{personal.usuario.username|capfirst}} - Web Developer
-                                        <small>Member since Nov. 2012</small>
+                                        <small>Miembro desde {{personal.usuario.date_joined|date:"j F, Y"}}</small>
                                     </p>
                                 </li>
                                 
@@ -54,7 +54,7 @@
                         </li>
 {% endblock %}
             
-{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar3.png" class="img-circle" alt="User Image" />{% endblock %}
+{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />{% endblock %}
 
 {% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
 
