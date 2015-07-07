@@ -496,6 +496,35 @@ def lista_historias(request, id_proyecto):
         return render_to_response('historias.html', {'equipo':equipo,'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+
+@login_required(login_url='/ingresar')    
+def informe_productbacklog(request, id_proyecto):
+    usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipos=Equipo.objects.filter(proyecto=id_proyecto)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    proyecto=Proyecto.objects.get(id=id_proyecto)
+    
+    
+    sprints = Sprint.objects.filter(proyecto=id_proyecto)
+    historiasTodas=Historia.objects.filter(sprint__in=sprints)
+    
+    
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            historias=Historia.objects.filter(proyecto_id=id_proyecto)
+            tareas=Tarea.objects.filter(historia__in=historiasTodas)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            historias=Historia.objects.filter(proyecto_id=id_proyecto)
+            tareas=Tarea.objects.filter(historia__in=historiasTodas)
+          
+    if usuario.is_authenticated():
+        return render_to_response('informeProductBacklog.html', {'historiasTodas':historiasTodas,'sprints':sprints,'tareas':tareas,'equipos':equipos,'equipo':equipo,'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
 
 
 @login_required(login_url='/ingresar')    
@@ -1542,6 +1571,64 @@ def ver_graficas(request, id_sprint):
           
     if usuario.is_authenticated():
         return render_to_response('graficas.html', {'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+    else:
+        return render_to_response('inicio.html', context_instance=RequestContext(request))
+    
+    
+@login_required(login_url='/ingresar')    
+def informe_graficas(request, id_sprint):
+    usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    sprint = Sprint.objects.get(id=id_sprint)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    if usuario.is_authenticated():
+        if usuario.is_superuser:
+            personal=Personal.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            tareas=Tarea.objects.filter(historia__in=historias)
+            
+    dias = sprint.fechaFin - sprint.fechaInicio
+    listaEtiquetaGrafica=[]
+    sumaEsfuerzo=[]   
+    suma=0
+    datosTareasGrafica=[]
+    esfuerzoIdeal=[]
+    
+    for tarea in tareas:
+        suma=suma+tarea.esfuerzo
+        datosTareasGrafica.append(tarea.esfuerzo)
+    
+    media=suma/dias.days
+    valor=suma+media
+    
+    for i in range(dias.days):
+        fecha=sprint.fechaInicio + timedelta(days=i)       
+        for tarea in tareas:
+            if (tarea.fechaEstado==fecha) and (tarea.estado == 2):
+                print "tarea terminada"
+                suma=suma-tarea.esfuerzo
+                print suma
+        sumaEsfuerzo.append(str(suma))
+                
+        valor=valor-media
+        esfuerzoIdeal.append(str(valor))
+        
+        listaEtiquetaGrafica.append(fecha.strftime("%d %b"))
+    #EtiquetaGraficas="'"+"', '".join(EtiquetaGraficas)+"'"
+    
+    
+    sumaEsfuerzo=",".join(sumaEsfuerzo)
+    esfuerzoIdeal=",".join(esfuerzoIdeal)
+    
+    print esfuerzoIdeal
+    
+          
+    if usuario.is_authenticated():
+        return render_to_response('informegraficas.html', {'equipo':equipo,'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 

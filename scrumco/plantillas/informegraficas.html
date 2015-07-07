@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+
+{% block titulo %}ScrumCO{% endblock %}
+
+{% block style_css %}{% endblock %}
+
+{% block script %}
+			
+	<!-- ChartJS 1.0.1 -->
+    <script src="{{STATIC_URL}}js/plugins/chartjs/Chart.min.js" type="text/javascript"></script>
+    
+    <script>
+      $(function () {
+        /* ChartJS
+         * -------
+         * Here we will create a few charts using ChartJS
+         */
+
+        //--------------
+        //- AREA CHART -
+        //--------------
+
+
+        
+        var etiquetasGrafica = new Array();
+
+        {% for dato in etiquetas%}
+        	etiquetasGrafica.push('{{dato}}');
+        {% endfor %}
+        
+
+        var areaChartData = {
+          labels: etiquetasGrafica,
+          datasets: [
+            {
+              label: "Restante",
+              fillColor: "rgba(60,141,188,0.9)",
+              strokeColor: "rgba(60,141,188,0.8)",
+              pointColor: "#3b8bba",
+              pointStrokeColor: "rgba(60,141,188,1)",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(60,141,188,1)",
+              data: [{{esfuerzo}}]
+            },
+            {
+              label: "Ideal",
+              fillColor: "rgba(210, 214, 222, 1)",
+              strokeColor: "rgba(210, 214, 222, 1)",
+              pointColor: "rgba(210, 214, 222, 1)",
+              pointStrokeColor: "#c1c7d1",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(220,220,220,1)",
+              data: [{{esfuerzoIdeal}}]
+            }
+          ]
+        };
+
+        var areaChartOptions = {
+          tooltipFillColor: "rgba(0,0,0,0.8)",                
+          multiTooltipTemplate: "<%= datasetLabel %> = <%= value %> H",
+          //Boolean - If we should show the scale at all
+          showScale: true,
+          //Boolean - Whether grid lines are shown across the chart
+          scaleShowGridLines: false,
+          //String - Colour of the grid lines
+          scaleGridLineColor: "rgba(0,0,0,.05)",
+          //Number - Width of the grid lines
+          scaleGridLineWidth: 1,
+          //Boolean - Whether to show horizontal lines (except X axis)
+          scaleShowHorizontalLines: true,
+          //Boolean - Whether to show vertical lines (except Y axis)
+          scaleShowVerticalLines: true,
+          //Boolean - Whether the line is curved between points
+          bezierCurve: true,
+          //Number - Tension of the bezier curve between points
+          bezierCurveTension: 0.3,
+          //Boolean - Whether to show a dot for each point
+          pointDot: true,
+          //Number - Radius of each point dot in pixels
+          pointDotRadius: 2,
+          //Number - Pixel width of point dot stroke
+          pointDotStrokeWidth: 1,
+          //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+          pointHitDetectionRadius: 10,
+          //Boolean - Whether to show a stroke for datasets
+          datasetStroke: true,
+          //Number - Pixel width of dataset stroke
+          datasetStrokeWidth: 2,
+          //Boolean - Whether to fill the dataset with a color
+          datasetFill: true,
+          //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+          maintainAspectRatio: false,
+          //Boolean - whether to make the chart responsive to window resizing
+          responsive: true
+        };
+
+
+        //-------------
+        //- LINE CHART -
+        //--------------
+        var lineChartCanvas = $("#lineChart").get(0).getContext("2d");
+        var lineChart = new Chart(lineChartCanvas);
+        var lineChartOptions = areaChartOptions;
+        lineChartOptions.datasetFill = false;
+        lineChart.Line(areaChartData, lineChartOptions);
+
+        
+        
+        var barChartData = {
+          labels: etiquetasGrafica,
+          datasets: [
+            {
+              label: "Restante",
+              fillColor: "rgba(60,141,188,0.9)",
+              strokeColor: "rgba(60,141,188,0.8)",
+              pointColor: "#3b8bba",
+              pointStrokeColor: "rgba(60,141,188,1)",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(60,141,188,1)",
+              data: [{{esfuerzo}}]
+            },
+            {
+              label: "Ideal",
+              fillColor: "rgba(210, 214, 222, 1)",
+              strokeColor: "rgba(210, 214, 222, 1)",
+              pointColor: "rgba(210, 214, 222, 1)",
+              pointStrokeColor: "#c1c7d1",
+              pointHighlightFill: "#fff",
+              pointHighlightStroke: "rgba(220,220,220,1)",
+              data: [{{esfuerzoIdeal}}]
+            }
+          ]
+        };
+        
+        
+
+        //-------------
+        //- BAR CHART -
+        //-------------
+        var barChartCanvas = $("#barChart").get(0).getContext("2d");
+        var barChart = new Chart(barChartCanvas);
+        var barChartData = barChartData;
+        barChartData.datasets[1].fillColor = "#00a65a";
+        barChartData.datasets[1].strokeColor = "#00a65a";
+        barChartData.datasets[1].pointColor = "#00a65a";
+        var barChartOptions = {
+          //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+          scaleBeginAtZero: true,
+          //Boolean - Whether grid lines are shown across the chart
+          scaleShowGridLines: true,
+          //String - Colour of the grid lines
+          scaleGridLineColor: "rgba(0,0,0,.05)",
+          //Number - Width of the grid lines
+          scaleGridLineWidth: 1,
+          //Boolean - Whether to show horizontal lines (except X axis)
+          scaleShowHorizontalLines: true,
+          //Boolean - Whether to show vertical lines (except Y axis)
+          scaleShowVerticalLines: true,
+          //Boolean - If there is a stroke on each bar
+          barShowStroke: true,
+          //Number - Pixel width of the bar stroke
+          barStrokeWidth: 2,
+          //Number - Spacing between each of the X value sets
+          barValueSpacing: 5,
+          //Number - Spacing between data sets within X values
+          barDatasetSpacing: 1,
+          
+          //Boolean - whether to make the chart responsive
+          responsive: true,
+          maintainAspectRatio: false
+        };
+
+        barChartOptions.datasetFill = false;
+        barChart.Bar(barChartData, barChartOptions);
+      });
+    </script>
+
+{% endblock %}
+
+{% block navegacion %}
+				<div class="navbar-header">
+			      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      
+			    </div>
+			
+			    
+				
+
+
+{% endblock %}
+
+{% block notimensajes %}
+						
+{% endblock %}
+                        
+{% block notificaciones %}
+						
+{% endblock %}
+                        
+{% block notitareas %}
+	
+{% endblock %}
+                       
+{% block infousuario %}
+						<!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-user"></i>
+                                <span>{{personal.usuario.username|capfirst}} <i class="caret"></i></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header bg-light-blue">
+                                    <img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />
+                                    <p>
+                                        {{personal.usuario.username|capfirst}} - Web Developer
+                                        <small>Miembro desde {{personal.usuario.date_joined|date:"j F, Y"}}</small>
+                                    </p>
+                                </li>
+                                
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="btn btn-default btn-flat">Perfil</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="/cerrar" class="btn btn-default btn-flat">Salir</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+{% endblock %}
+            
+{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />{% endblock %}
+
+{% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
+
+{% block sidebarlateral %}
+						<li>
+                            <a href="/">
+                                <i class="fa fa-th"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/proyectos">
+                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
+                            </a>
+                        </li>
+                        
+						<li class="header">{{proyecto.nombreProyecto|upper}}</li>
+						
+						<li>
+                            <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
+                                <i class="fa fa-file-text-o"></i> <span>Product backlog</span>
+                            </a>
+                        </li>
+                        <li  class="active">
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                                <i class="fa fa-bolt"></i> <span>Sprints</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
+                                <i class="fa fa-calendar"></i> <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
+                                <i class="fa fa-gamepad"></i> <span>Planning poker</span>
+                            </a>
+                        </li>
+                 
+{% endblock %}
+
+{% block headersuperior %}
+				<section class="content-header">
+                    <ol class="breadcrumb">
+                    	{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
+                    		<button class="btn btn-warning btn-sm" onclick="window.print();">Guardar en PDF o imprimir</button>
+                        {% endif %} 
+                    </ol>
+                </section>
+
+				<center><h1>
+                    {{equipo.miembro.empresa|capfirst}}
+                </h4></center>
+                
+                
+                <br />
+                
+						<center>
+							<h4 class="page-header">
+			                    {{proyecto.nombreProyecto|capfirst}}
+			                    <small>
+			                    	{{proyecto.descripcion|capfirst}}
+			                    	<br /><br />
+			                    	<table>
+			                    		<tr>
+			                    			<td><strong>Fecha Inicio: </strong>{{proyecto.fechaInicio|date:"j F, Y"}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Foco: </strong>{{proyecto.foco}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Historias: </strong>{{proyecto.historiasP}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Story Point: </strong>{{proyecto.spProyecto}}</td>
+			                    		</tr>
+			                    	</table>
+			                    </small>
+			                </h4>
+						</center>
+                
+
+				<br />
+						<center>
+							<h4 class="page-header">
+			                    {{sprint.nombre|capfirst}}
+			                    <small>
+			                    	{{sprint.Objetivo|capfirst}}
+			                    	<br /><br />
+			                    	<table>
+			                    		<tr>
+			                    			<td><strong>Fecha Inicio: </strong>{{sprint.fechaInicio|date:"j F, Y"}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Fecha Fin: </strong>{{sprint.fechaFin|date:"j F, Y"}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Nº Tareas: </strong>{{sprint.nTareas}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Horas estimadas: </strong>{{sprint.hEstimadas}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Horas pendientes: </strong>{{sprint.hPendientes}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Velocidad objetivo: </strong>{{sprint.velocidadOb}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Velocidad real: </strong>{{sprint.velocidadReal}}</td>
+			                    			<td> | </td>
+			                    			<td></td>
+			                    		</tr>
+			                    	</table>
+			                    </small>
+			                </h4>
+						</center>
+{% endblock %}
+
+{% block contenido %}
+			
+<div class="row">
+            <div class="col-md-12">
+            	
+            	<!-- LINE CHART -->
+              <div class="box box-success">
+                <div class="box-header with-border">
+                  <h3 class="box-title">Burndown Chart</h3>
+                  <div class="box-tools pull-right">
+                  	<button class="btn btn-success btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="" style="margin-right: 5px;" data-original-title="Collapse"><i class="fa fa-minus"></i></button>
+          
+                  </div>
+                </div>
+                <div class="box-body">
+                  <div class="chart">
+                    <canvas id="lineChart" height="250"></canvas>
+                  </div>
+                </div><!-- /.box-body -->
+              </div><!-- /.box -->
+
+              
+
+            </div><!-- /.col (LEFT) -->
+            <div class="col-md-6">
+
+			        
+
+            </div><!-- /.col (RIGHT) -->
+          </div><!-- /.row -->
+
+{% endblock %}                        
