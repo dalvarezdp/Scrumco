@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+
+{% block titulo %}ScrumCO{% endblock %}
+
+{% block style_css %}{% endblock %}
+
+{% block script %}{% endblock %}
+
+{% block notimensajes %}
+						
+{% endblock %}
+                        
+{% block notificaciones %}
+						
+{% endblock %}
+                        
+{% block notitareas %}
+						
+						
+{% endblock %}
+                       
+{% block infousuario %}
+						<!-- User Account: style can be found in dropdown.less -->
+                        <li class="dropdown user user-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-user"></i>
+                                <span>{{personal.usuario.username|capfirst}} <i class="caret"></i></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- User image -->
+                                <li class="user-header bg-light-blue">
+                                    <img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />
+                                    <p>
+                                        {{personal.usuario.username|capfirst}} - Web Developer
+                                        <small>Miembro desde {{personal.usuario.date_joined|date:"j F, Y"}}</small>
+                                    </p>
+                                </li>
+                                
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href='{% url 'principal.views.editar_miembro' personal.usuario.id %}' class="btn btn-default btn-flat">Perfil</a>
+                                    </div>
+                                    <div class="pull-right">
+                                        <a href="/cerrar" class="btn btn-default btn-flat">Salir</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+{% endblock %}
+            
+{% block imagenlateral %}<img src="{{STATIC_URL}}img/avatar5.png" class="img-circle" alt="User Image" />{% endblock %}
+
+{% block saludo %}<p>Hola, {{personal.usuario.username|capfirst}}</p>{% endblock %}
+
+{% block sidebarlateral %}
+						<li>
+                            <a href="/">
+                                <i class="fa fa-th"></i> <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/proyectos">
+                                <i class="fa fa-dashboard"></i> <span>Proyectos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/miembros">
+                                <i class="fa fa-users"></i><span>Miembros</span>
+                            </a>
+                        </li>
+                        
+						<li class="header">{{proyecto.nombreProyecto|upper}}</li>
+					
+                        <li class="active">
+                            <a href="{% url 'principal.views.lista_historias' proyecto.id %}">
+                                <i class="fa fa-file-text-o"></i> <span>Product backlog</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.lista_sprints' proyecto.id %}'>
+                                <i class="fa fa-bolt"></i> <span>Sprints</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.calendario' proyecto.id %}'>
+                                <i class="fa fa-calendar"></i> <span>Calendario</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
+                                <i class="fa fa-gamepad"></i> <span>Planning poker</span>
+                            </a>
+                        </li>
+                 
+{% endblock %}
+
+{% block headersuperior %}
+				<section class="content-header">
+                    <ol class="breadcrumb">
+                    	{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
+                    		<button class="btn btn-warning btn-sm" onclick="window.print();">Guardar en PDF o imprimir</button>
+                        {% endif %} 
+                    </ol>
+                </section>
+{% endblock %}
+
+{% block contenido %}
+
+				<center><h1>
+                    {{equipo.miembro.empresa|capfirst}}
+                </h4></center>
+
+				<h4 class="page-header">
+                    Proyecto
+                    <small>Información sobre el proyecto.</small>
+                </h4>
+                {% if proyecto %}
+					
+					    <div class="panel panel-default">
+						 
+						  <div class="box-body table-responsive no-padding">
+                          	<table class="table table-hover">
+                              <tr>
+                              	<th>ID</th>
+                                <th>Nombre</th>
+                                <th>Fecha inicio</th>
+                                <th>Descripción</th>
+                                <th>Foco</th>
+                                <th>Historias</th>
+                                <th>Story Point</th>
+                              </tr>
+                              <tr>
+                                <td>{{proyecto.id}}</td>
+                                <td>{{proyecto.nombreProyecto|capfirst}}</td>
+                                <td>{{proyecto.fechaInicio|date:"j F, Y"}}</td>
+                                <td>{{proyecto.descripcion|capfirst}}</td>                                
+                                <td>{{proyecto.foco|capfirst}}</td>
+                                <td>{{proyecto.historiasP|capfirst}}</td> 
+                                <td>{{proyecto.spProyecto|capfirst}}</td>                                              
+                              </tr>	   					  
+                            </table>
+                          </div><!-- /.box-body -->
+						</div>						
+					
+				{% else %}
+						<div class="alert alert-warning" role="alert">Aún no hay proyecto.</div>							  
+
+				{% endif %}
+				
+				<h4 class="page-header">
+                    Equipo
+                    <small>Miembros encargados del desarrollo del proyecto.</small>
+                </h4>
+                {% if equipos %}
+					
+					    <div class="panel panel-default">
+						 
+						  <div class="box-body table-responsive no-padding">
+                          	<table class="table table-hover">
+                              <tr>
+                              	<th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Empresa</th>
+                                <th>Rol</th>
+                              </tr>
+                    {% for dato in equipos %}
+                              <tr>
+                                <td>{{dato.miembro.usuario.first_name}} {{dato.miembro.usuario.last_name}}</td>
+                                <td>{{dato.miembro.usuario.email|capfirst}}</td>
+                                {% if dato.miembro.telefono %}		                                        		
+                        			<td>{{dato.miembro.telefono|capfirst}}</td>
+                        		{% else %}
+                        			<td>Sin teléfono</td>
+                        		{% endif %}                              
+                                <td>{{dato.miembro.empresa|capfirst}}</td>
+                                {% if dato.scrummaster %}		                                        		
+                        			<td>Scrum Master</td>
+                        		{% endif %}
+                        		{% if dato.teammember %}
+                        			<td>Team Member</td>
+                        		{% endif %}
+                        		{% if dato.productowner %}
+                        			<td>Product Owner</td>
+                        		{% endif %}            
+                              </tr>	   					  
+					{% endfor %}
+                            </table>
+                          </div><!-- /.box-body -->
+						</div>						
+					
+				{% else %}
+						<div class="alert alert-warning" role="alert">No hay equipo en el proyecto.</div>							  
+
+				{% endif %}
+
+				<h4 class="page-header">
+                    Product Backlog
+                    <small>Conjunto de requisitos del proyecto.</small>
+                </h4>
+                {% if historias %}
+					
+					    <div class="panel panel-default">
+						 
+						  <div class="box-body table-responsive no-padding">
+                          	<table class="table table-hover">
+                              <tr>
+                              	<th>ID</th>
+                                <th>Título</th>
+                                <th>Descripción</th>
+                                <th>Aceptación</th>
+                                <th>Prioridad</th>
+                                <th>Story Point</th>
+                                <th>Creador</th>
+                              </tr>
+                    {% for dato in historias %}
+                              <tr>
+                                <td>{{dato.id}}</td>
+                                <td>{{dato.titulo|capfirst}}</td>
+                                <td>{{dato.descripcion|capfirst}}</td>
+                                <td>{{dato.aceptacion|capfirst}}</td>
+                                <td>{{dato.prioridad|capfirst}}</td>
+                                <td>{{dato.sp|capfirst}}</td>
+                                <td>{{dato.creador.first_name|capfirst}} {{dato.creador.last_name|capfirst}}</td>               
+                              </tr>	   					  
+					{% endfor %}
+                            </table>
+                          </div><!-- /.box-body -->
+						</div>						
+					
+				{% else %}
+						<div class="alert alert-warning" role="alert">Aún no hay ninguna historia.</div>							  
+
+				{% endif %}
+                
+				
+				<h4 class="page-header">
+                    Sprint Backlog
+                    <small>Conjunto de Sprint asociados al proyecto con sus respectivas historias y tareas.</small>
+                </h4>
+				
+				
+				
+				
+				
+				
+				
+				
+				{% if sprints %}
+				
+					{% for sprint in sprints %}
+						<br />
+						<center>
+							<h4 class="page-header">
+			                    {{sprint.nombre|capfirst}}
+			                    <small>
+			                    	{{sprint.Objetivo|capfirst}}
+			                    	<br /><br />
+			                    	<table>
+			                    		<tr>
+			                    			<td><strong>Fecha Inicio: </strong>{{sprint.fechaInicio|date:"j F, Y"}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Fecha Fin: </strong>{{sprint.fechaFin|date:"j F, Y"}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Nº Tareas: </strong>{{sprint.nTareas}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Horas estimadas: </strong>{{sprint.hEstimadas}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Horas pendientes: </strong>{{sprint.hPendientes}}</td>
+			                    			<td> | </td>
+			                    			<td><strong>Velocidad objetivo: </strong>{{sprint.velocidadOb}}</td>
+			                    		</tr>
+			                    		<tr>
+			                    			<td><strong>Velocidad real: </strong>{{sprint.velocidadReal}}</td>
+			                    			<td> | </td>
+			                    			<td></td>
+			                    		</tr>
+			                    	</table>
+			                    </small>
+			                </h4>
+						</center>
+						{% for historia in historiasTodas %}
+							
+							{% if sprint.id == historia.sprint.id %}
+								
+							
+								{% if historia %}
+										<div class="panel panel-default">
+										  <!-- Default panel contents -->
+										  <div class="panel-heading">{{historia.titulo|capfirst}}
+			
+										  </div>
+										  <div class="box-body table-responsive no-padding">
+			
+								{% if tareas %}
+										
+									    	<table class="table table-hover">
+				                              <tr>
+				                              	<th>ID</th>
+				                                <th>Resumen</th>
+				                                <th>Descripción</th>
+				                                <th>Estado</th>
+				                                <th>Esfuerzo</th>
+				                                <th>Realizador</th>
+				                              </tr>
+						                    {% for dato in tareas %}
+						                    	{% if historia.id = dato.historia_id %}
+						                              <tr>
+						                                <td>{{dato.id}}</td>
+						                                <td>{{dato.resumen|capfirst}}</td>
+						                                <td>{{dato.descripcion|capfirst}}</td>
+						                                {% if dato.estado = 0 %}
+						                                	<td>Pendiente</td>
+						                                {% elif dato.estado = 1 %}
+						                                	<td>Trabajando</td>  
+						                                {% else %}
+						                                	<td>Hecho</td> 
+						                                {% endif %}  
+						                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
+						                                {% if dato.realizador%}
+				                                			<td>{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</td>
+				                                		{% else %}
+															<td>Sin asignar</td>
+														{% endif %}                        
+						                              </tr>						  
+						                        {% endif %}
+											{% endfor %}
+				                            </table>
+				                          </div><!-- /.box-body -->
+										</div>						
+									
+								{% else %}
+										<div class="alert alert-warning" role="alert">Aún no hay ninguna tarea para este proyecto.</div>							  
+				
+								{% endif %}
+							{% else %}
+									<div class="alert alert-warning" role="alert">Aún no hay historias en este sprint.</div>							  
+			
+							{% endif %}							  
+			
+							{% endif %}
+						{% endfor %}
+				{% endfor %}
+			{% else %}
+						<div class="alert alert-warning" role="alert">Aún no hay sprints para este proyecto.</div>							  
+
+			{% endif %}
+
+
+{% endblock %}                        

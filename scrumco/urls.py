@@ -68,4 +68,6 @@ urlpatterns = patterns('',
     url(r'^/sprint/(?P<id_sprint>\d+)/quitar/tarea/(?P<id_tarea>\d+)/asignada$', 'principal.views.quitarAsignar_tarea', name='quitarAsignar_tarea'),
     url(r'^py/(?P<id_proyecto>\d+)/equipo/(?P<id_equipo>\d+)/rol/(?P<id_rol>\d+)$', 'principal.views.asignar_rol', name='asignar_rol'),
     url(r'^borrar/comentario/(?P<id_comentario>\d+)$','principal.views.borrar_comentario', name='borrar_comentario'),
+    url(r'^productbacklog/(?P<id_proyecto>\d+)/informe$', 'principal.views.informe_productbacklog', name='informe_productbacklog'),
+    url(r'^sprint/(?P<id_sprint>\d+)/graficas/informe$','principal.views.informe_graficas', name='informe_graficas'),
 )
