@@ -461,7 +461,7 @@ body > .header .logo .icon {
 }
 @media (max-width: 767px) {
   .navbar .navbar-nav > li {
-    float: left;
+    /*float: left;*/
   }
   .navbar-nav {
     margin: 0;
