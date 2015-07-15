@@ -135,11 +135,13 @@
                                 <i class="fa fa-calendar"></i> <span>Calendario</span>
                             </a>
                         </li>
+                        {% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
                         <li>
                             <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
                                 <i class="fa fa-gamepad"></i> <span>Planning poker</span>
                             </a>
                         </li>
+                        {% endif %}
                  
 {% endblock %}
 
@@ -286,10 +288,12 @@
 							  <!-- Default panel contents -->
 							  <div class="panel-heading">{{historia.titulo|capfirst}}
 							  	<div class="navbar-right">
+							  		{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
 	                    			<ul class="nav navbar-nav">
 										
 							  	 		<a href="" data-toggle="modal" data-target="#exampleModal{{historia.id}}"><i class="fa fa-plus"></i> Añadir tarea</a>
 							  	 	</ul>
+							  	 	{% endif %}
 							  	</div>
 							  </div>
 							  <div class="box-body table-responsive no-padding">
@@ -320,15 +324,16 @@
 			                                {% endif %}  
 			                                <td>{{dato.esfuerzo|capfirst}} Horas</td>
 			                                {% if dato.realizador%}
-	                                			<td>{% if dato.realizador.miembro.usuario.id == personal.usuario.id %}<a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'>{% endif%}<small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
+	                                			<td>{% if dato.realizador.miembro.usuario.id == personal.usuario.id %}{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}<a href='{% url 'principal.views.quitarAsignar_tarea' sprint.id dato.id %}'>{% endif %}{% endif%}<small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></a></td>
 	                                		{% else %}
-												<td><a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'><small class="label label-danger">Sin asignar</small></a></td>
+												<td>{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}<a href='{% url 'principal.views.asignar_tarea' sprint.id dato.id %}'>{% endif %}<small class="label label-danger">Sin asignar</small></a></td>
 											{% endif %} 
 											<td>      
+												{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
 												<a href="" data-toggle="modal" data-target="#exampleModalEdit{{dato.id}}"><i class="fa fa-edit"></i></a>
 												<!-- Small modal -->
 												<a href="" data-toggle="modal" data-target=".bs-example-modal-sm{{dato.id}}"><i class="fa fa-trash-o"></i></a>
-			                             
+			                             		{% endif %}
 			                                </td>                        
 			                              </tr>						  
 			                        {% endif %}

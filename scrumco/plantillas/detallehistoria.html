@@ -86,11 +86,13 @@
                                 <i class="fa fa-calendar"></i> <span>Calendario</span>
                             </a>
                         </li>
+                        {% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
                         <li>
                             <a href='{% url 'principal.views.sprints_poker' proyecto.id %}'>
                                 <i class="fa fa-gamepad"></i> <span>Planning poker</span>
                             </a>
                         </li>
+                        {% endif %}
                  
 {% endblock %}
 
@@ -100,7 +102,7 @@
                         Tareas
                     </h1>
                     <ol class="breadcrumb">
-                    	{% if personal.usuario.is_superuser %}
+                    	{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
                         	<li><a href="{% url 'principal.views.nueva_tarea' proyecto.id historia.id%}"><i class="fa fa-plus"></i> Nueva tarea</a></li>
                         {% endif %} 
                     </ol>
@@ -144,11 +146,15 @@
                         			<td><small class="label label-default">{{dato.realizador.miembro.usuario.first_name}} {{dato.realizador.miembro.usuario.last_name}}</small></td>
                         		{% else %}
 									<td><small class="label label-danger">Sin asignar</small></td>
-								{% endif %}    
+								{% endif %} 
+								   
 								<td>          
-									<a href='{% url 'principal.views.editar_tarea' dato.id %}'><i class="fa fa-edit"></i></a>
-                                	<a href='{% url 'principal.views.eliminar_tarea' dato.id %}'><i class="fa fa-trash-o"></i></a>
+									{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
+										<a href='{% url 'principal.views.editar_tarea' dato.id %}'><i class="fa fa-edit"></i></a>
+                                		<a href='{% url 'principal.views.eliminar_tarea' dato.id %}'><i class="fa fa-trash-o"></i></a>
+                                	{% endif %}
                                 </td>                 
+                                
                               </tr>	   					  
 					{% endfor %}
                             </table>

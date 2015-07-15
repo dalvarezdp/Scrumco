@@ -39,7 +39,7 @@ def inicio(request):
             return render_to_response('privado.html',{'personal':personal}, context_instance=RequestContext(request))
 
     if usuario.is_authenticated():
-        return render_to_response('privado.html',{'historias':pendientespoker,'tareas':tareas,'proyectos':proyectos,'personal':personal}, context_instance=RequestContext(request))
+        return render_to_response('privado.html',{'equipo':equipo,'historias':pendientespoker,'tareas':tareas,'proyectos':proyectos,'personal':personal}, context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect('/ingresar')
     
@@ -667,6 +667,8 @@ def eliminar_historia(request, id_historia):
 @login_required(login_url='/ingresar')    
 def detalle_historia(request, id_historia):
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     historia=Historia.objects.get(id=id_historia)
     proyecto=Proyecto.objects.get(id=historia.proyecto.id)
     if usuario.is_authenticated():
@@ -678,7 +680,7 @@ def detalle_historia(request, id_historia):
             tareas=Tarea.objects.filter(historia_id=id_historia)
           
     if usuario.is_authenticated():
-        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
+        return render_to_response('detallehistoria.html', {'equipo':equipo,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
@@ -1100,6 +1102,8 @@ def cerrar_sprint(request, id_sprint):
 @login_required(login_url='/ingresar')    
 def detalle_sprint(request, id_sprint):
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     if usuario.is_authenticated():
         if usuario.is_superuser:
@@ -1110,7 +1114,7 @@ def detalle_sprint(request, id_sprint):
             proyecto=Proyecto.objects.get(id=sprint.proyecto_id)
           
     if usuario.is_authenticated():
-        return render_to_response('detallesprint.html', {'personal':personal, 'proyecto':proyecto, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('detallesprint.html', {'equipo':equipo,'personal':personal, 'proyecto':proyecto, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1118,6 +1122,8 @@ def detalle_sprint(request, id_sprint):
 @login_required(login_url='/ingresar')    
 def calendario(request, id_proyecto):
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1129,7 +1135,7 @@ def calendario(request, id_proyecto):
             sprints=Sprint.objects.filter(proyecto=id_proyecto)
           
     if usuario.is_authenticated():
-        return render_to_response('calendario.html', {'personal':personal, 'proyecto':proyecto, 'sprints':sprints}, context_instance=RequestContext(request))
+        return render_to_response('calendario.html', {'equipo':equipo,'personal':personal, 'proyecto':proyecto, 'sprints':sprints}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1138,6 +1144,8 @@ def calendario(request, id_proyecto):
 @login_required(login_url='/ingresar')    
 def lista_sprintbacklog(request, id_sprint):
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1152,7 +1160,7 @@ def lista_sprintbacklog(request, id_sprint):
     formulario = TareaForm()
           
     if usuario.is_authenticated():
-        return render_to_response('sprintbacklog.html', {'formulario':formulario, 'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('sprintbacklog.html', {'equipo':equipo,'formulario':formulario, 'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
@@ -1265,6 +1273,8 @@ def ver_muro(request, id_sprint):
     fechaHoy=date.today()
     fechaHoy.strftime("%y-%m-%d")
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1277,7 +1287,7 @@ def ver_muro(request, id_sprint):
             tareas=Tarea.objects.filter(historia__in=historias)
           
     if usuario.is_authenticated():
-        return render_to_response('muro.html', {'fechaHoy':fechaHoy,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('muro.html', {'equipo':equipo,'fechaHoy':fechaHoy,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1522,6 +1532,8 @@ def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
 @login_required(login_url='/ingresar')    
 def ver_graficas(request, id_sprint):
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1570,7 +1582,7 @@ def ver_graficas(request, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('graficas.html', {'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('graficas.html', {'equipo':equipo,'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1662,6 +1674,8 @@ def borrar_comentario(request, id_comentario):
 def ver_sprintplanning(request, id_sprint):
     hoy=date.today()
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1702,7 +1716,7 @@ def ver_sprintplanning(request, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('sprintplanning.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('sprintplanning.html', {'equipo':equipo,'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1711,6 +1725,8 @@ def ver_sprintplanning(request, id_sprint):
 def ver_sprintreview(request, id_sprint):
     hoy=date.today()
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1751,7 +1767,7 @@ def ver_sprintreview(request, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('sprintreview.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('sprintreview.html', {'equipo':equipo,'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1760,6 +1776,8 @@ def ver_sprintreview(request, id_sprint):
 def ver_sprintretrospective(request, id_sprint):
     hoy=date.today()
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1800,7 +1818,7 @@ def ver_sprintretrospective(request, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('sprintretrospective.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('sprintretrospective.html', {'equipo':equipo,'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -1809,6 +1827,8 @@ def ver_sprintretrospective(request, id_sprint):
 def ver_dailyscrum(request, id_sprint):
     hoy=date.today()
     usuario=request.user
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
@@ -1849,7 +1869,7 @@ def ver_dailyscrum(request, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('dailyscrum.html', {'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
+        return render_to_response('dailyscrum.html', {'equipo':equipo,'hoy':hoy,'fechasDiferentes':fechasDiferentes,'comentarios':comentarios,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
