@@ -15,7 +15,7 @@
 {% endblock %}
                         
 {% block notitareas %}
-						
+						{% if personal.usuario.is_superuser or equipo.scrummaster or equipo.teammember %}
 						<!-- Tasks: style can be found in dropdown.less -->
                         <li class="tasks-menu">
                             <a href="{% url 'principal.views.informe_productbacklog' proyecto.id %}" target="_blank">
@@ -23,6 +23,7 @@
                             </a>
                             
                         </li>
+                        {% endif %}
 						
 {% endblock %}
                        
