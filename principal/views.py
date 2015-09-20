@@ -19,27 +19,38 @@ from forms import ProyectoForm, UserForm, HistoriaForm, TareaForm, SprintForm, S
 
 def inicio(request):
     usuario=request.user  
-    if usuario.is_authenticated():
-        miembro = Miembro.objects.get(usuario=usuario.id)
+    if usuario.is_authenticated():    
         if usuario.is_superuser:
-            personal=Personal.objects.get(usuario=usuario.id)
+            try:
+                personal=Personal.objects.get(usuario=usuario.id)
+                miembro = Miembro.objects.get(usuario=usuario.id)
+            except:
+                Personal.objects.create(
+                    foto = "default",
+                    usuario = usuario,
+                    empresa = ""
+                )
+                personal=Personal.objects.get(usuario=usuario.id)
+                miembro = Miembro.objects.get(usuario=usuario.id)
         else:
+            miembro = Miembro.objects.get(usuario=usuario.id)
             personal=Miembro.objects.get(usuario=usuario.id)
             
         try:
-            equipo = Equipo.objects.get(miembro=miembro.id)
+            rol = Equipo.objects.filter(miembro=miembro.id).first()
+            equipo = Equipo.objects.filter(miembro=miembro.id)
             proyectos = Equipo.objects.filter(miembro=miembro.id)
             vproyectos = Equipo.objects.filter(miembro=miembro.id).values('proyecto_id').distinct()
             historias = Historia.objects.filter(proyecto__in=vproyectos).exclude(sprint_id=None)
-            votospoker= Poker.objects.filter(jugador=equipo.id).filter(historia__in=historias)
+            votospoker= Poker.objects.filter(jugador__in=equipo).filter(historia__in=historias)
             pendientespoker = historias.exclude(id__in=votospoker.values('historia_id'))
-            tareas = Tarea.objects.filter(realizador=equipo.id).order_by('estado')
+            tareas = Tarea.objects.filter(realizador__in=equipo).order_by('estado')
         except:
             print "no hay datos de usuario"
             return render_to_response('privado.html',{'personal':personal}, context_instance=RequestContext(request))
 
     if usuario.is_authenticated():
-        return render_to_response('privado.html',{'equipo':equipo,'historias':pendientespoker,'tareas':tareas,'proyectos':proyectos,'personal':personal}, context_instance=RequestContext(request))
+        return render_to_response('privado.html',{'rol':rol, 'equipo':equipo,'historias':pendientespoker,'tareas':tareas,'proyectos':proyectos,'personal':personal}, context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect('/ingresar')
     
@@ -421,6 +432,12 @@ def editar_proyecto(request,id_proyecto):
                     validacion=2
                     return render_to_response('editarproyecto.html',{'validacion':validacion, 'proyecto':proyecto,'formulario':formulario, 'personal':personal, 'miembros':miembros}, context_instance=RequestContext(request))
                 else:
+                    proyecto.nombreProyecto=nombreProyecto
+                    proyecto.fechaInicio=fechaInicio
+                    proyecto.descripcion=descripcion
+                    proyecto.foco=foco
+                    proyecto.save()
+                    
                     return HttpResponseRedirect('/proyectos')
             except:
                 #try:                        
@@ -482,7 +499,7 @@ def detalle_proyecto(request, id_proyecto):
 def lista_historias(request, id_proyecto):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=id_proyecto)
     proyecto=Proyecto.objects.get(id=id_proyecto)
     if usuario.is_authenticated():
         if usuario.is_superuser:
@@ -493,7 +510,7 @@ def lista_historias(request, id_proyecto):
             historias=Historia.objects.filter(proyecto_id=id_proyecto)
           
     if usuario.is_authenticated():
-        return render_to_response('historias.html', {'equipo':equipo,'personal':personal, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
+        return render_to_response('historias.html', {'personal':personal, 'historias':historias, 'proyecto':proyecto, 'equipo':equipo}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
     
@@ -502,9 +519,9 @@ def lista_historias(request, id_proyecto):
 def informe_productbacklog(request, id_proyecto):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipos=Equipo.objects.filter(proyecto=id_proyecto)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipos=Equipo.objects.filter(proyecto=id_proyecto) 
     proyecto=Proyecto.objects.get(id=id_proyecto)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     
     
     sprints = Sprint.objects.filter(proyecto=id_proyecto)
@@ -531,7 +548,7 @@ def informe_productbacklog(request, id_proyecto):
 def nueva_historia(request, id_proyecto):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -583,7 +600,7 @@ def nueva_historia(request, id_proyecto):
 def editar_historia(request, id_historia):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -639,7 +656,7 @@ def editar_historia(request, id_historia):
 def eliminar_historia(request, id_historia):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     historia=Historia.objects.get(id=id_historia)
     proyecto=Proyecto.objects.get(id=historia.proyecto.id)
     if usuario.is_authenticated():
@@ -668,9 +685,9 @@ def eliminar_historia(request, id_historia):
 def detalle_historia(request, id_historia):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     historia=Historia.objects.get(id=id_historia)
     proyecto=Proyecto.objects.get(id=historia.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -692,6 +709,9 @@ def nueva_tarea(request, id_proyecto, id_historia):
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=id_proyecto)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
             proyecto=Proyecto.objects.get(pk=id_proyecto)
     
     if request.method == 'POST':
@@ -737,6 +757,9 @@ def editar_tarea(request, id_tarea):
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
             proyecto=Proyecto.objects.get(pk=historia.proyecto.id)
+        else:
+            personal=Miembro.objects.get(usuario=usuario.id)
+            proyecto=Proyecto.objects.get(pk=historia.proyecto.id)
     
     if request.method == 'POST':
         formulario=TareaForm(request.POST)
@@ -776,18 +799,22 @@ def eliminar_tarea(request, id_tarea):
     tarea=Tarea.objects.get(pk=id_tarea)
     historia=Historia.objects.get(pk=tarea.historia.id)
     proyecto=Proyecto.objects.get(pk=historia.proyecto.id)
+    
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia_id=historia.id)
+            miembro=Miembro.objects.get(usuario=usuario.id)
+            equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia_id=historia.id)
+            equipo=Equipo.objects.filter(miembro_id=personal.id).get(proyecto_id=proyecto.id)
     
     tarea.delete()
           
     if usuario.is_authenticated():
-        return render_to_response('detallehistoria.html', {'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
+        return render_to_response('detallehistoria.html', {'equipo':equipo, 'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historia':historia}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))
 
@@ -796,8 +823,8 @@ def eliminar_tarea(request, id_tarea):
 def lista_sprints(request, id_proyecto):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     proyecto=Proyecto.objects.get(id=id_proyecto)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -848,7 +875,7 @@ def nuevo_sprint(request, id_proyecto):
     dedicaciones=[]
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             proyecto=Proyecto.objects.get(id=id_proyecto)
@@ -911,6 +938,8 @@ def nuevo_sprint(request, id_proyecto):
                     p.nTareas = 0
                     p.hEstimadas = 0
                     p.hPendientes = 0
+                    p.velocidadObj = 0
+                    p.velocidadReal = 0
                     p.proyecto = proyecto
                     p.save()
                 #except:
@@ -941,7 +970,7 @@ def editar_sprint(request, id_sprint):
     dedicaciones=[]
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     sprint= Sprint.objects.get(id=id_sprint)
     if usuario.is_authenticated():
         if usuario.is_superuser:
@@ -976,13 +1005,15 @@ def editar_sprint(request, id_sprint):
         #    fecha =  datetime.strptime(fechaInicio,"%d/%m/%Y").strftime("%Y-%m-%d")           
         
         
-        if not nombreSprint or not fechaInicio or not objetivo or not historiasSprint or not fechaRevision:
+        
+        if not nombreSprint or not fechaInicio or not objetivo or not historiasSelectSprint or not fechaRevision:
 
             if fechaInicio:
                 fechaInicio = datetime.strptime(fechaInicio,'%Y-%m-%d') 
             if fechaRevision:
                 fechaRevision = datetime.strptime(fechaRevision,'%Y-%m-%d') 
             #rellenar campos obligatorios
+            print "Estoy dentro"
             validacion=1
             return render_to_response('editarsprint.html',{'equipo':equipo,'validacion':validacion,'historiasSprint':historiasSprint,'sprint':sprint,'formulario':formulario, 'personal':personal, 'equipo':equipo, 'historias':historias, 'proyecto':proyecto}, context_instance=RequestContext(request))
             
@@ -1077,7 +1108,7 @@ def editar_sprint(request, id_sprint):
 def cerrar_sprint(request, id_sprint):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id)
     sprint= Sprint.objects.get(id=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
     if usuario.is_authenticated():
@@ -1123,7 +1154,7 @@ def detalle_sprint(request, id_sprint):
 def calendario(request, id_proyecto):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
+    
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1133,6 +1164,8 @@ def calendario(request, id_proyecto):
             personal=Miembro.objects.get(usuario=usuario.id)
             proyecto=Proyecto.objects.get(id=id_proyecto)
             sprints=Sprint.objects.filter(proyecto=id_proyecto)
+    
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
           
     if usuario.is_authenticated():
         return render_to_response('calendario.html', {'equipo':equipo,'personal':personal, 'proyecto':proyecto, 'sprints':sprints}, context_instance=RequestContext(request))
@@ -1145,10 +1178,10 @@ def calendario(request, id_proyecto):
 def lista_sprintbacklog(request, id_sprint):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1229,19 +1262,30 @@ def editar_tarea_modal(request, id_tarea):
             resumen = request.POST['resumen']           
             descripcion = request.POST['descripcion']
             esfuerzo = request.POST['esfuerzo']
-          
-            if not resumen or not esfuerzo:
-                return HttpResponseRedirect('/rellenarcampos')
-            else:                     
-                tarea.resumen=resumen
-                tarea.descripcion=descripcion
-                tarea.esfuerzo=esfuerzo
-                tarea.creador = usuario
-                tarea.save()                    
             
-            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id]))            
-        else:
-            return HttpResponseRedirect('/formularioNoValido')
+            
+            if not resumen or not esfuerzo or not descripcion:
+                #Rellenar campos obligatorios
+                validacion=1
+                return render_to_response('editartarea.html',{'validacion':validacion,'tarea':tarea, 'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+            else:   
+                try: 
+                    validate_integer(esfuerzo)                    
+                    tarea.resumen = resumen
+                    tarea.descripcion = descripcion                 
+                    tarea.estado = 0
+                    tarea.esfuerzo = esfuerzo
+                    tarea.creador = usuario
+                    tarea.save()   
+                except:
+                    #El esfuerzo tiene que ser un numero entero
+                    validacion=2
+                    return render_to_response('editartarea.html',{'validacion':validacion,'tarea':tarea, 'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
+                          
+            return HttpResponseRedirect(reverse('lista_sprintbacklog',args=[historia.sprint_id])) 
+            
+            
+
     else:
         formulario = TareaForm()
     return render_to_response('registrotarea.html',{'formulario':formulario, 'personal':personal, 'proyecto':proyecto}, context_instance=RequestContext(request))
@@ -1273,11 +1317,12 @@ def ver_muro(request, id_sprint):
     fechaHoy=date.today()
     fechaHoy.strftime("%y-%m-%d")
     usuario=request.user
-    miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
-    historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    miembro=Miembro.objects.get(usuario_id=usuario.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
+    historias=Historia.objects.filter(sprint=id_sprint)
+    
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1302,14 +1347,14 @@ def asignar_tarea(request, id_sprint, id_tarea):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     tarea=Tarea.objects.get(id=id_tarea)
-    tarea.realizador = personaEquipo
+    tarea.realizador = personaEquipo[0]
     tarea.save()
           
     if usuario.is_authenticated():
@@ -1327,11 +1372,11 @@ def quitarAsignar_tarea(request, id_sprint, id_tarea):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     tarea=Tarea.objects.get(id=id_tarea)
     tarea.realizador = None
@@ -1352,11 +1397,11 @@ def sprints_poker(request, id_proyecto):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     if request.method == 'POST':
         formulario=SelectSprintForm(request.POST)
@@ -1376,7 +1421,7 @@ def sprints_poker(request, id_proyecto):
     
           
     if usuario.is_authenticated():
-        return render_to_response('sprintpoker.html', {'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
+        return render_to_response('sprintpoker.html', {'personaEquipo':personaEquipo[0],'personal':personal, 'sprints':sprints, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))    
 
@@ -1389,17 +1434,17 @@ def planning_poker(request,id_proyecto, id_sprint):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         
         sprint = Sprint.objects.get(id=id_sprint)                     
         historias = Historia.objects.filter(sprint = id_sprint)
         tareas=Tarea.objects.filter(historia__in=historias)
         
-        historiasVotadas=Poker.objects.filter(jugador_id=personaEquipo.id)
+        historiasVotadas=Poker.objects.filter(jugador_id=personaEquipo[0].id)
         resultadoPoker=Poker.objects.filter(sprint_id=id_sprint)
         
         if request.method == 'POST':
@@ -1409,9 +1454,7 @@ def planning_poker(request,id_proyecto, id_sprint):
                 sprint = Sprint.objects.get(id=id_sprint)           
                 historias = Historia.objects.filter(sprint = id_sprint)
                 tareas=Tarea.objects.filter(historia__in=historias)
-                
-                           
-                
+             
                 return HttpResponseRedirect(reverse('planning_poker',args=[id_proyecto,sprint.id]))
             else:
                 return HttpResponseRedirect('/formularioNoValido')
@@ -1420,7 +1463,7 @@ def planning_poker(request,id_proyecto, id_sprint):
     
           
     if usuario.is_authenticated():
-        return render_to_response('poker.html', {'resultadoPoker':resultadoPoker,'historiasVotadas':historiasVotadas,'personaEquipo':personaEquipo,'personal':personal, 'sprints':sprints, 'valueSprint':sprint, 'historias':historias, 'tareas':tareas, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
+        return render_to_response('poker.html', {'resultadoPoker':resultadoPoker,'historiasVotadas':historiasVotadas,'personaEquipo':personaEquipo[0],'personal':personal, 'sprints':sprints, 'valueSprint':sprint, 'historias':historias, 'tareas':tareas, 'proyecto':proyecto, 'formulario':formulario}, context_instance=RequestContext(request))
     else:
         return render_to_response('inicio.html', context_instance=RequestContext(request))    
     
@@ -1436,15 +1479,15 @@ def votar_poker(request, id_proyecto, id_sprint, id_historia, voto):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
             
         try:              
-            existe = Poker.objects.get(jugador=personaEquipo,proyecto_id=id_proyecto,sprint_id=id_sprint,historia_id=id_historia)
+            existe = Poker.objects.get(jugador=personaEquipo[0],proyecto_id=id_proyecto,sprint_id=id_sprint,historia_id=id_historia)
             existe.votado = 1
             existe.spVotado = voto
             existe.save()
@@ -1455,7 +1498,7 @@ def votar_poker(request, id_proyecto, id_sprint, id_historia, voto):
                 historia = historia,
                 votado = 1,
                 spVotado = voto,
-                jugador = personaEquipo,
+                jugador = personaEquipo[0],
             )
             v.save()  
     
@@ -1476,11 +1519,11 @@ def elegir_estimacion(request, id_proyecto, id_sprint, id_historia, voto):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
         
         e = Proyecto.objects.get(pk=proyecto.id)
@@ -1502,7 +1545,6 @@ def elegir_estimacion(request, id_proyecto, id_sprint, id_historia, voto):
     
 @login_required(login_url='/ingresar')    
 def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
-    print "Hola"
     usuario=request.user
     proyecto=Proyecto.objects.get(id=id_proyecto)
     sprint=Sprint.objects.get(id=id_sprint)
@@ -1511,11 +1553,11 @@ def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             sprints=Sprint.objects.filter(proyecto_id=id_proyecto)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
                        
             
@@ -1533,10 +1575,10 @@ def reiniciar_estimacion(request, id_proyecto, id_sprint, id_historia):
 def ver_graficas(request, id_sprint):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1579,8 +1621,7 @@ def ver_graficas(request, id_sprint):
     esfuerzoIdeal=",".join(esfuerzoIdeal)
     
     print esfuerzoIdeal
-    
-          
+        
     if usuario.is_authenticated():
         return render_to_response('graficas.html', {'equipo':equipo,'esfuerzoIdeal':esfuerzoIdeal,'esfuerzo':sumaEsfuerzo,'etiquetas':listaEtiquetaGrafica,'personal':personal, 'tareas':tareas, 'proyecto':proyecto, 'historias':historias, 'sprint':sprint}, context_instance=RequestContext(request))
     else:
@@ -1591,10 +1632,10 @@ def ver_graficas(request, id_sprint):
 def informe_graficas(request, id_sprint):
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Personal.objects.get(usuario=usuario.id)
@@ -1675,20 +1716,20 @@ def ver_sprintplanning(request, id_sprint):
     hoy=date.today()
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     comentarios=ComentarioReuniones.objects.filter(reunion=1).filter(sprint_id=sprint.id).order_by('-fechahora')
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
     print fechasDiferentes
@@ -1702,7 +1743,7 @@ def ver_sprintplanning(request, id_sprint):
             c = ComentarioReuniones.objects.create(                       
                 proyecto = proyecto,
                 sprint = sprint,
-                persona = personaEquipo,
+                persona = personaEquipo[0],
                 reunion = 1,
                 mensaje = mensaje,
             )
@@ -1726,20 +1767,20 @@ def ver_sprintreview(request, id_sprint):
     hoy=date.today()
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     comentarios=ComentarioReuniones.objects.filter(reunion=2).filter(sprint_id=sprint.id).order_by('-fechahora')
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
     print fechasDiferentes
@@ -1753,7 +1794,7 @@ def ver_sprintreview(request, id_sprint):
             c = ComentarioReuniones.objects.create(                       
                 proyecto = proyecto,
                 sprint = sprint,
-                persona = personaEquipo,
+                persona = personaEquipo[0],
                 reunion = 2,
                 mensaje = mensaje,
             )
@@ -1777,20 +1818,20 @@ def ver_sprintretrospective(request, id_sprint):
     hoy=date.today()
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     comentarios=ComentarioReuniones.objects.filter(reunion=3).filter(sprint_id=sprint.id).order_by('-fechahora')
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
     print fechasDiferentes
@@ -1804,7 +1845,7 @@ def ver_sprintretrospective(request, id_sprint):
             c = ComentarioReuniones.objects.create(                       
                 proyecto = proyecto,
                 sprint = sprint,
-                persona = personaEquipo,
+                persona = personaEquipo[0],
                 reunion = 3,
                 mensaje = mensaje,
             )
@@ -1828,20 +1869,20 @@ def ver_dailyscrum(request, id_sprint):
     hoy=date.today()
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
-    equipo=Equipo.objects.get(miembro_id=miembro.id)
     sprint = Sprint.objects.get(id=id_sprint)
     historias=Historia.objects.filter(sprint=id_sprint)
     proyecto=Proyecto.objects.get(id=sprint.proyecto.id)
+    equipo=Equipo.objects.filter(miembro_id=miembro.id).get(proyecto_id=proyecto.id)
     comentarios=ComentarioReuniones.objects.filter(reunion=4).filter(sprint_id=sprint.id).order_by('-fechahora')
     if usuario.is_authenticated():
         if usuario.is_superuser:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
         else:
             personal=Miembro.objects.get(usuario=usuario.id)
             tareas=Tarea.objects.filter(historia__in=historias)
-            personaEquipo=Equipo.objects.get(miembro=personal.id)
+            personaEquipo=Equipo.objects.filter(miembro=personal.id).filter(proyecto=proyecto.id)
             
     fechasDiferentes=comentarios.values_list('fecha',flat=True).order_by('-fecha').distinct()
     print fechasDiferentes
@@ -1855,7 +1896,7 @@ def ver_dailyscrum(request, id_sprint):
             c = ComentarioReuniones.objects.create(                       
                 proyecto = proyecto,
                 sprint = sprint,
-                persona = personaEquipo,
+                persona = personaEquipo[0],
                 reunion = 4,
                 mensaje = mensaje,
             )

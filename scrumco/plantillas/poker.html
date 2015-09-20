@@ -284,10 +284,16 @@
 									
 											  </div>
 											</div>
-                                        </div>
+                                        </div> 
+                                        {% for datohv in historiasVotadas %}
+                                		{% if dato.id = datohv.historia_id %}
+                                			</div>                                 
+                                		
+                                		{% endif %}
+                                	{% endfor %}                                       
                                     </div>
-                                </div>
-                                {% endfor %}
+                                   {% endfor %}
+                                </div>                          
                             </div>
                         </div><!-- /.box-body -->
                     </div><!-- /.box -->
