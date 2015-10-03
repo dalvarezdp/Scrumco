@@ -1630,7 +1630,6 @@ def ver_graficas(request, id_sprint):
     
 @login_required(login_url='/ingresar')    
 def informe_graficas(request, id_sprint):
-    //prueba
     usuario=request.user
     miembro=Miembro.objects.get(usuario_id=usuario.id)
     sprint = Sprint.objects.get(id=id_sprint)
